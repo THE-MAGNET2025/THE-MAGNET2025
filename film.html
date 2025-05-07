@@ -85,7 +85,6 @@
     .title-block h1 {
       font-size: clamp(2rem, 12vw, 8rem);
       line-height: 1.1;
-      
     }
     .outline {
       color: transparent;
@@ -116,14 +115,8 @@
 
     /* Video Blocks */
     .video-block { text-align: center; }
-    
-    .vid-1, .vid-3, .vid-5{
-      background-color: var(--forest);
-      
-    }
-    .vid-2, .vid-4{
-      background-color: var(--dark-accent);
-}
+    .vid-1, .vid-3, .vid-5 { background-color: var(--forest); }
+    .vid-2, .vid-4 { background-color: var(--dark-accent); }
 
     .video-title {
       font-size: clamp(1.5rem, 6vw, 2.5rem);
@@ -131,8 +124,6 @@
       letter-spacing: 1px;
       color: var(--lavender);
       text-shadow: 3px 3px var(--dark-accent);
-      
-      
     }
     .video-author {
       margin-top:1rem;
@@ -141,25 +132,41 @@
       letter-spacing: 1px;
       color: var(--lavender);
       text-shadow: 3px 3px var(--dark-accent);
-      
     }
+
+    /* Make container relative so pseudo‑elements show outside margins */
     .video-container {
       width: 80%;
       max-width: 900px;
       aspect-ratio: 16/9;
-      
+      position: relative;
+      margin: 0 auto;
     }
+    /* ARROWS: up on left, down on right */
+    .video-container::before,
+    .video-container::after {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-60%);
+      font-size: clamp(2rem, 6vw, 3rem);
+      color: var(--lavender);
+      opacity: 0.7;
+      pointer-events: none;
+      user-select: none;
+    }
+    .video-container::before { content: '▲'; left: -2rem; }
+    .video-container::after  { content: '▼'; right: -2rem; }
+
     .video-wrapper {
       position: relative;
       width: 100%;
-      max-width: 55rem;      
-      padding-top: 56.25%;   /* 16:9 aspect ratio */
+      max-width: 55rem;
+      padding-top: 56.25%; /* 16:9 aspect ratio */
       overflow: hidden;
       border-radius: 16px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       transition: box-shadow var(--transition);
-      margin: 0 auto;
-}
+    }
     .video-wrapper video {
       position: absolute;
       top: 0;
@@ -169,9 +176,11 @@
       object-fit: cover;
       transition: transform var(--transition);
     }
+
     /* Responsive */
     @media (max-width: 768px) { .video-container { width: 90%; } }
     @media (max-width: 480px) { .video-container { width: 100%; } }
+
     @font-face {
       font-family: 'Bestie Seventy';
       src: url('styles/Bestie Seventy.ttf') format('truetype');
@@ -182,7 +191,6 @@
 <body>
   <include-html src="nav2.html"></include-html>
   <include-html src="loader.html"></include-html>
-
 
   <div class="container">
     <section class="block title-block active">
@@ -203,7 +211,8 @@
       <h2 class="video-title">Camera Roll Overture</h2>
       <div class="video-container">
         <div class="video-wrapper">
-          <video controls poster="./images/CameraApurutre_thumbnail.png"> <source src="./images/CameraApurutre_thumbnail.png" type="video/webm" />
+          <video controls poster="./images/CameraApurutre_thumbnail.png">
+            <source src="./images/CameraApurutre_thumbnail.png" type="video/webm" />
             <source src="./Films/Camera Roll Overture - Peter Snowden (1).mp4" type="video/mp4" />
           </video>
         </div>
@@ -215,49 +224,57 @@
         <span>Right to go Down</span>
       </div>
     </section>
+
     <section class="block video-block vid-2">
       <h2 class="video-title">FREEASSOCIATION</h2>
       <div class="video-container">
         <div class="video-wrapper">
-          <video controls poster="./images/Freeassociation_thumbnail.png"> <source src="./images/Freeassociation_thumbnail.png" type="video/webm" />
+          <video controls poster="./images/Freeassociation_thumbnail.png">
+            <source src="./images/Freeassociation_thumbnail.png" type="video/webm" />
             <source src="./Films/FREEASSOCIATION - Peter Snowden.mp4" type="video/mp4" />
           </video>
         </div>
       </div>
-      <h2 class="video-author">Peter Snowden</h2> </div>
+      <h2 class="video-author">Peter Snowden</h2>
     </section>
+
     <section class="block video-block vid-3">
       <h2 class="video-title">I, the Wanderer</h2>
       <div class="video-container">
         <div class="video-wrapper">
-          <video controls poster="./images/Grief.png"> <source src="./images/Grief.png" type="video/webm" />
+          <video controls poster="./images/Grief.png">
+            <source src="./images/Grief.png" type="video/webm" />
             <source src="./Films/I, the Wanderer - Poem by Abi Mize, Film by Jimmy Gonzalez, Nora Manley.mov" type="video/mp4" />
           </video>
         </div>
       </div>
-      <h2 class="video-author">Abi Mize, Jimmy Gonzalez, Nora Manley</h2></div>
+      <h2 class="video-author">Abi Mize, Jimmy Gonzalez, Nora Manley</h2>
     </section>
+
     <section class="block video-block vid-4">
-    <h2 class="video-title">Grief</h2>
+      <h2 class="video-title">Grief</h2>
       <div class="video-container">
         <div class="video-wrapper">
-          <video controls poster="./images/I, the Wanderer.png"> <source src="./images/I, the Wanderer.png" type="video/webm" />
+          <video controls poster="./images/I, the Wanderer.png">
+            <source src="./images/I, the Wanderer.png" type="video/webm" />
             <source src="./Films/Grief - Kristan Reyes, Peter Snowden, Nora Manley.mov" type="video/mp4" />
           </video>
         </div>
       </div>
-      <h2 class="video-author">Kristan Reyes, Peter Snowden, Nora Manley</h2></div>
+      <h2 class="video-author">Kristan Reyes, Peter Snowden, Nora Manley</h2>
     </section>
+
     <section class="block video-block vid-5">
       <h2 class="video-title">Memories</h2>
       <div class="video-container">
         <div class="video-wrapper">
-          <video controls poster="./images/Laptop_thumbnail.webp"> <source src="./images/Laptop_thumbnail.webp" type="video/webm" />
+          <video controls poster="./images/Laptop_thumbnail.webp">
+            <source src="./images/Laptop_thumbnail.webp" type="video/webm" />
             <source src="./Films/Memories - Kristan Reyes.mov" type="video/mp4" />
           </video>
         </div>
       </div>
-      <h2 class="video-author">Krisan Reye</h2></div>
+      <h2 class="video-author">Krisan Reyes</h2>
     </section>
   </div>
 
@@ -272,79 +289,83 @@
   </div>
 
   <script>
-  const blocks = document.querySelectorAll('.block');
-  const dots = document.querySelectorAll('.dot');
-  let currentIndex = 0;
-  let isTransitioning = false;
+    const blocks = document.querySelectorAll('.block');
+    const dots = document.querySelectorAll('.dot');
+    let currentIndex = 0;
+    let isTransitioning = false;
 
-  function pauseAllVideos() {
-    document.querySelectorAll('video').forEach(v => v.pause());
-  }
+    function pauseAllVideos() {
+      document.querySelectorAll('video').forEach(v => v.pause());
+    }
 
-  function showBlock(index) {
-    blocks.forEach((blk, i) => {
-      blk.classList.remove('active', 'prev', 'next');
-      if (i === index) blk.classList.add('active');
-      else if (i < index) blk.classList.add('prev');
-      else blk.classList.add('next');
-    });
-    dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
-    pauseAllVideos();
-  }
+    function showBlock(index) {
+      blocks.forEach((blk, i) => {
+        blk.classList.remove('active', 'prev', 'next');
+        if (i === index) blk.classList.add('active');
+        else if (i < index) blk.classList.add('prev');
+        else blk.classList.add('next');
+      });
+      dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+      pauseAllVideos();
+    }
 
-  function navigate(direction) {
-    if (isTransitioning) return;
-    const prevIndex = currentIndex;
-    if (direction === 'next' && currentIndex < blocks.length - 1) currentIndex++;
-    else if (direction === 'prev' && currentIndex > 0) currentIndex--;
-    else return;
-    isTransitioning = true;
-    showBlock(currentIndex);
-    setTimeout(() => { isTransitioning = false; }, 900);
-  }
-
-  // Dot click
-  dots.forEach(dot => dot.addEventListener('click', e => {
-    e.stopPropagation();
-    const idx = +dot.dataset.index;
-    if (!isTransitioning && idx !== currentIndex) {
+    function navigate(direction) {
+      if (isTransitioning) return;
+      if (direction === 'next' && currentIndex < blocks.length - 1) currentIndex++;
+      else if (direction === 'prev' && currentIndex > 0) currentIndex--;
+      else return;
       isTransitioning = true;
-      currentIndex = idx;
       showBlock(currentIndex);
-      setTimeout(() => isTransitioning = false, 900);
+      setTimeout(() => { isTransitioning = false; }, 900);
     }
-  }));
 
-  // Click navigation, ignore clicks inside video
-  document.addEventListener('click', e => {
-    if (e.target.closest('.title-block')) return navigate('next');
-    if (e.target.closest('.video-container') || e.target.closest('video')) return;
-    const mid = window.innerWidth / 2;
-    navigate(e.clientX < mid ? 'prev' : 'next');
-  });
+    // Dot click
+    dots.forEach(dot =>
+      dot.addEventListener('click', e => {
+        e.stopPropagation();
+        const idx = +dot.dataset.index;
+        if (!isTransitioning && idx !== currentIndex) {
+          isTransitioning = true;
+          currentIndex = idx;
+          showBlock(currentIndex);
+          setTimeout(() => isTransitioning = false, 900);
+        }
+      })
+    );
 
-  // Wheel navigation, ignore within video
-  document.addEventListener('wheel', e => {
-    if (e.target.closest('.video-container') || e.target.closest('video')) return;
-    e.preventDefault();
-    navigate(e.deltaY > 0 ? 'next' : 'prev');
-  }, { passive: false });
+    // Click nav (ignore clicks inside video)
+    document.addEventListener('click', e => {
+      if (e.target.closest('.title-block')) return navigate('next');
+      if (e.target.closest('.video-container') || e.target.closest('video')) return;
+      const mid = window.innerWidth / 2;
+      navigate(e.clientX < mid ? 'prev' : 'next');
+    });
 
-  // Touch navigation, ignore start within video
-  let touchStartY = null;
-  document.addEventListener('touchstart', e => { touchStartY = e.changedTouches[0].clientY; });
-  document.addEventListener('touchend', e => {
-    const touchEndY = e.changedTouches[0].clientY;
-    const target = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-    if (target.closest('.video-container') || target.closest('video')) {
+    // Wheel nav
+    document.addEventListener('wheel', e => {
+      if (e.target.closest('.video-container') || e.target.closest('video')) return;
+      e.preventDefault();
+      navigate(e.deltaY > 0 ? 'next' : 'prev');
+    }, { passive: false });
+
+    // Touch nav
+    let touchStartY = null;
+    document.addEventListener('touchstart', e => { touchStartY = e.changedTouches[0].clientY; });
+    document.addEventListener('touchend', e => {
+      const target = document.elementFromPoint(
+        e.changedTouches[0].clientX,
+        e.changedTouches[0].clientY
+      );
+      if (target.closest('.video-container') || target.closest('video')) {
+        touchStartY = null;
+        return;
+      }
+      const touchEndY = e.changedTouches[0].clientY;
+      if (touchStartY === null) return;
+      const diff = touchStartY - touchEndY;
+      if (Math.abs(diff) > 50) navigate(diff > 0 ? 'next' : 'prev');
       touchStartY = null;
-      return;
-    }
-    if (touchStartY === null) return;
-    const diff = touchStartY - touchEndY;
-    if (Math.abs(diff) > 50) navigate(diff > 0 ? 'next' : 'prev');
-    touchStartY = null;
-  });
-</script>
+    });
+  </script>
 </body>
 </html>
