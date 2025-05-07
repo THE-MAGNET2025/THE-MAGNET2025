@@ -1,85 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Functional Loading Screen</title>
+  <style>
     :root {
-            --coral: #e89082;
-            --forest: #3b574f;
-            --ocean: #4e83aa;
-            --lavender: #c1c2e4;
-            --sand: #dcc6be;
-            --c-grey: #c0b8b2;
-        }
+      --coral: #e89082;
+      --forest: #3b574f;
+      --ocean: #4e83aa;
+      --lavender: #c1c2e4;
+      --sand: #dcc6be;
+      --c-grey: #c0b8b2;
+    }
+
     /* Loader Container */
-#loading-screen {
-  position: fixed;
-  inset: 0;
-  background: var(--ocean);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.6s ease, visibility 0.6s ease;
-}
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--ocean);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
 
-/* Fade out when loading is done */
-#loading-screen.fade-out {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
+    /* Fade out when loading is done */
+    #loading-screen.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
 
-/* Spinner Style */
-.loader {
-  height: 80px;
-  aspect-ratio: 1;
-  padding: 10px;
-  border-radius: 50%;
-  box-sizing: border-box;
-  position: relative;
-  mask: conic-gradient(#000 0 0) content-box exclude, conic-gradient(#000 0 0);
-  filter: blur(12px);
-}
-.loader:before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: repeating-conic-gradient(#0000 0 5%, var(--coral), #0000 20% 50%);
-  animation: l2 1.5s linear infinite;
-}
-@keyframes l2 {
-  to {
-    rotate: 1turn;
-  }
-}
+    /* Spinner Style */
+    .loader {
+      height: 80px;
+      aspect-ratio: 1;
+      padding: 10px;
+      border-radius: 50%;
+      box-sizing: border-box;
+      position: relative;
+      mask: conic-gradient(#000 0 0) content-box exclude, conic-gradient(#000 0 0);
+      filter: blur(12px);
+    }
+    .loader:before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-conic-gradient(#0000 0 5%, var(--coral), #0000 20% 50%);
+      animation: l2 1.5s linear infinite;
+    }
+    @keyframes l2 {
+      to { rotate: 1turn; }
+    }
 
-</style>
-
+    /* Optional: hide content until loader is gone */
+    #app {
+      visibility: hidden;
+    }
+    body.loaded #app {
+      visibility: visible;
+      transition: visibility 0s 0.6s; /* show content after loader transition */
+    }
+  </style>
+</head>
 <body>
-    <div id="loading-screen">
-        <div class="loader"></div>
-      </div>
-      <script>
-        window.addEventListener("load", () => {
-          const loader = document.getElementById("loading-screen");
-          loader.classList.add("fade-out");
-      
-          // Optional: remove it completely after fade (for cleanup)
-          setTimeout(() => {
-            loader.remove();
-          }, 700); // should be a bit more than the CSS transition duration
-        });
-      </script>
-      
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loader"></div>
+  </div>
+
+  <!-- Your real content -->
+  <div id="app">
+    <h1>Welcome!</h1>
+    <p>Your site content goes here.</p>
+    <!-- ... -->
+  </div>
+
+  <script>
+    window.addEventListener('load', function() {
+      const loadingScreen = document.getElementById('loading-screen');
+      // trigger fade-out
+      loadingScreen.classList.add('fade-out');
+      // mark body so content becomes visible
+      document.body.classList.add('loaded');
+      // once transition ends, remove loader element entirely
+      loadingScreen.addEventListener('transitionend', function() {
+        loadingScreen.remove();
+      });
+    });
+  </script>
 </body>
 </html>
-
-
-
-  
