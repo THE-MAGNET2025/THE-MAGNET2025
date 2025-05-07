@@ -188,6 +188,97 @@
       src: url('styles/Bestie Seventy.ttf') format('truetype');
       font-display: swap;
     }
+    <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Open Sans', sans-serif; background: #4e83aa; color: #333; line-height: 1.6; overflow-x: hidden; }
+
+    /* Page transition */
+    .page-transition { /* ... your existing styles ... */ }
+    .page-transition.flip { /* ... */ }
+
+    header { /* ... */ }
+    .grid-container { /* ... */ }
+    .book-slide { /* ... */ }
+    .book-cover { /* ... */ }
+    .book-top { /* ... */ }
+    .book-content { display: flex; flex-direction: column; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.95); }
+    .book-title { /* ... */ }
+    .book-author { /* ... */ }
+    .book-body { font-size: 0.9rem; color: #444; overflow-y: auto; flex-grow: 1; padding: 0.5rem; }
+    .book-body::-webkit-scrollbar { width: 6px; }
+    .book-body::-webkit-scrollbar-thumb { background-color: #bbb; border-radius: 3px; }
+
+    /* Expand/Collapse Button */
+    .expand-btn {
+      background: #e89082;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin: 0.5rem;
+      align-self: flex-end;
+    }
+    @media (max-width: 600px) {
+      .expand-btn {
+        padding: 0.75rem 1.25rem;
+        font-size: 1rem;
+      }
+    }
+
+    /* Overlay */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      padding: 1rem;
+    }
+    .overlay.hidden { display: none; }
+    .overlay-content {
+      background: #fff;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 90%;
+      overflow-y: auto;
+      position: relative;
+      padding: 1rem;
+    }
+    .overlay-close {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: transparent;
+      color: #333;
+      font-size: 1.5rem;
+      border: none;
+      cursor: pointer;
+    }
+    @media (max-width: 600px) {
+      .overlay-content {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+      }
+    }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.75rem; }
+      .book-body { font-size: 0.85rem; }
+      .book-cover { width: 15rem; height: 40vh; }
+      .book-top { width: 100%; height: auto; object-fit: cover; position: absolute; top: 0; left: 0; }
+    }
+
+    @font-face {
+      font-family: 'Bestie Seventy';
+      src: url('styles/Bestie Seventy.ttf') format('truetype');
+      font-display: swap;
+    }
   </style>
 </head>
 
@@ -210,7 +301,8 @@
           <img class="book-top" src="Literature-Covers/No-Man's-Land.png" alt="Book cover" />
           
           <div class="book-content">
-            <div class="book-title">No-Man's-Land</div>
+            <div class="book-title">No-Man's-Land <button class="expand-btn">Expand</button>
+            </div>
             <div class="book-author">by Mckenna Barnes</div>
             <div class="book-body">
               <p>
@@ -245,6 +337,7 @@
                 He stepped forward, and the light swallowed him whole.
               </p>
             </div>
+            
           </div>
         </div>
       </div>
@@ -254,7 +347,8 @@
           <img class="book-top" src="Literature-Covers/direction.png" alt="Book cover" />
           
           <div class="book-content">
-            <div class="book-title">Direction</div>
+            <div class="book-title">Direction <button class="expand-btn">Expand</button>
+            </div>
             <div class="book-author">by Micah Upton</div>
             <div class="book-body">
               <p>
@@ -408,7 +502,8 @@
           <img class="book-top" src="Literature-Covers/a sparrow flight.png" alt="Book cover" />
           
           <div class="book-content">
-            <div class="book-title">A Sparrow's Flight</div>
+            <div class="book-title">A Sparrow's Flight <button class="expand-btn">Expand</button>
+            </div>
             <div class="book-author">by Lilly A. Chattin</div>
             <div class="book-body">
               <p>
@@ -452,7 +547,8 @@
           <img class="book-top" src="Literature-Covers/rise young dreamer.png" alt="Book cover" />
           
           <div class="book-content">
-            <div class="book-title">Rise, Young Dreamer</div>
+            <div class="book-title">Rise, Young Dreamer <button class="expand-btn">Expand</button>
+            </div>
             <div class="book-author">by J McGill</div>
             <div class="book-body">
               <p>
@@ -481,7 +577,8 @@
           <img class="book-top" src="Literature-Covers/I the wanderer.png" alt="Book cover" />
           
           <div class="book-content">
-            <div class="book-title">I, The Wanderer</div>
+            <div class="book-title">I, The Wanderer <button class="expand-btn">Expand</button>
+            </div>
             <div class="book-author">by Abi Mize</div>
             <div class="book-body">
               <p>
@@ -523,7 +620,8 @@
           <img class="book-top" src="Literature-Covers/when the world was ours.png" alt="Book cover" />
           
           <div class="book-content">
-            <div class="book-title">When The World Was Ours</div>
+            <div class="book-title">When The World Was Ours <button class="expand-btn">Expand</button>
+            </div>
             <div class="book-author">by Katherine Marks</div>
             <div class="book-body">
               <p>
@@ -561,20 +659,58 @@
 
     </div>
   </main>
+  <div id="overlay" class="overlay hidden">
+    <div class="overlay-content">
+      <button class="overlay-close">&times;</button>
+      <div class="overlay-text"></div>
+    </div>
+  </div>
+
   <script>
-  // Page transition logic only
-  window.addEventListener('load', () => {
-    const transition = document.getElementById('pageTransition');
-    let flipped = false;
-    window.addEventListener('scroll', () => {
-      if (!flipped && window.scrollY > 10) {
-        flipped = true;
-        transition.classList.add('flip');
-        setTimeout(() => transition.remove(), 1000);
+    // Page transition logic
+    window.addEventListener('load', () => {
+      const transition = document.getElementById('pageTransition');
+      let flipped = false;
+      window.addEventListener('scroll', () => {
+        if (!flipped && window.scrollY > 10) {
+          flipped = true;
+          transition.classList.add('flip');
+          setTimeout(() => transition.remove(), 1000);
+        }
+      });
+      window.onbeforeunload = () => window.scrollTo(0, 0);
+    });
+
+    // Expand / Collapse logic
+    const overlay = document.getElementById('overlay');
+    const overlayText = overlay.querySelector('.overlay-text');
+    const closeBtn = overlay.querySelector('.overlay-close');
+
+    // When any Expand button is clicked, show the overlay
+    document.querySelectorAll('.expand-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const body = btn.closest('.book-content').querySelector('.book-body');
+        overlayText.innerHTML = body.innerHTML;
+        overlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    // Close the overlay
+    closeBtn.addEventListener('click', () => {
+      overlay.classList.add('hidden');
+      document.body.style.overflow = '';
+    });
+
+    // Also close if clicking outside the content
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) {
+        overlay.classList.add('hidden');
+        document.body.style.overflow = '';
       }
     });
-    window.onbeforeunload = () => window.scrollTo(0, 0);
-  });
-</script>
+  </script>
 </body>
 </html>
+
+

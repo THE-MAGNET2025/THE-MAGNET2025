@@ -69,29 +69,16 @@
 </head>
 <body>
   <!-- Loading Screen -->
-  <div id="loading-screen">
-    <div class="loader"></div>
-  </div>
+  
 
   <!-- Your real content -->
-  <div id="app">
-    <h1>Welcome!</h1>
-    <p>Your site content goes here.</p>
-    <!-- ... -->
-  </div>
+
 
   <script>
-    window.addEventListener('load', function() {
-      const loadingScreen = document.getElementById('loading-screen');
-      // trigger fade-out
-      loadingScreen.classList.add('fade-out');
-      // mark body so content becomes visible
-      document.body.classList.add('loaded');
-      // once transition ends, remove loader element entirely
-      loadingScreen.addEventListener('transitionend', function() {
-        loadingScreen.remove();
-      });
-    });
+   var loadingScreen = document.querySelector(".loadingScreen");
+   window.addEventListener('load', function() {
+  loadingScreen.style.display = 'none';
+})
   </script>
 </body>
 </html>
