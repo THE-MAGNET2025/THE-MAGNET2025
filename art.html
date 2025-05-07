@@ -251,7 +251,7 @@ h1{
 </head>
 <body>
   <include-html src="nav2.html"></include-html>
-  <include-html src="loader.html"></include-html>
+  <!--<include-html src="loader.html"></include-html>-->
 
 
     <div id="section1" class="section">
@@ -348,7 +348,7 @@ h1{
         <h2>- Bryant Price</h2>
       </div>
       <div class="image-container-wide pos-11">
-        <h1>I Wonder Why I Wander</h1>
+        <h1></h1>
         <img src="Magnet-Art-Images/3d-Still.png" alt="Art 11">       
         <h2>This piece depicts a journey through an unknown, magical landscape. Its winding steps, tranquil pond, and glowing cave invites the viewers to let their eyes - wander - and exploer its enchanting features.</h2> 
         <div class="spacer"></div>
@@ -436,7 +436,7 @@ h1{
       }
       } else {
         // MOBILE: clamp between start and end
-        scrollPosition = Math.max(Math.min(newPos, 0), -maxScroll);
+        scrollPosition = Math.max(Math.min(newPos, 0), -maxScroll-1000);
       }
       parallaxBg.style.transition = 'transform 0.5s ease';
       parallaxBg.style.transform = `translateY(${scrollPosition}px)`;
@@ -472,7 +472,7 @@ h1{
 
   window.addEventListener('touchmove', e => {
     e.preventDefault();
-    const currentY = e.touches[0].clientY;
+    const currentY = e.touches[0].clientY - 1000;
     const deltaY = (lastTouchY - currentY) * scrollSpeed;
     handleScroll(deltaY);
     lastTouchY = currentY;
