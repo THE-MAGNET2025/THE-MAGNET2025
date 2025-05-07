@@ -412,7 +412,6 @@ h1{
     if (revealed) {
       const newPos = scrollPosition - deltaY;
 
-      if (!isTouching) {
         // DESKTOP: teleport/reset logic
         if (newPos < -maxScroll - 2500) {
         //start
@@ -434,10 +433,7 @@ h1{
         parallaxBg.style.transition = 'transform 0.5s ease';
         parallaxBg.style.transform = `translateY(${scrollPosition}px)`;
       }
-      } else {
-        // MOBILE: clamp between start and end
-        scrollPosition = Math.max(Math.min(newPos, 0), -maxScroll-1000);
-      }
+      } 
       parallaxBg.style.transition = 'transform 0.5s ease';
       parallaxBg.style.transform = `translateY(${scrollPosition}px)`;
 
@@ -445,7 +441,7 @@ h1{
         hideSection();
       }
     }
-  }
+  
 
   window.addEventListener('wheel', e => {
     e.preventDefault();
