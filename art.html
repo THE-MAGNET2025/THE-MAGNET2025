@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="module" src="nav.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/GLTFLoader.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cookie&family=DM+Serif+Text:ital@0;1&family=Permanent+Marker&family=Poiret+One&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Art Gallery</title>
+  <style>
+      :root {
+      --coral: #e89082;
+      --forest: #3b574f;
+      --ocean: #4e83aa;
+      --lavender: #c1c2e4;
+      --sand: #dac4bc;
+      --dark-accent: #2a403b;
+      --path-bg: #e0e0e0;
+      --path-draw: var(--coral);
+      --text-color: #ffffff;
+      --c-grey: #f0f0f0;
+      --transition: 0.3s ease-in-out;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        overflow: hidden;
+        height: 100vh;
+        background: var(--c-grey);
+        font-family: sans-serif;
+        position: relative;
+    }
+    #section1 h1 {
+        font-size: 4rem;  
+        cursor: default;
+        color:var(--lavender);
+        font-family: "DM Serif Text", serif;
+        font-weight: 400;
+        font-style: italic;
+      
+        text-align: center;
+        justify-content: center;
+        justify-items: center;
+    }
+
+    /* Wander flow-in animation */
+    @keyframes letterFlow {
+        0% { opacity: 0; transform: translateY(100%); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-wander span {
+        display: inline-block;
+        opacity: 0;
+        transform: translateY(100%);
+        animation: letterFlow 0.6s ease-out forwards;
+        color: var(--coral);
+        font-family: 'Bestie Seventy', cursive;
+    }   
+    .animate-wander span:nth-child(1) { animation-delay: 0.1s; }
+    .animate-wander span:nth-child(2) { animation-delay: 0.2s; }
+    .animate-wander span:nth-child(3) { animation-delay: 0.3s; }
+    .animate-wander span:nth-child(4) { animation-delay: 0.4s; }
+    .animate-wander span:nth-child(5) { animation-delay: 0.5s; }
+    .animate-wander span:nth-child(6) { animation-delay: 0.6s; }
+    .animate-wander span:nth-child(7) { animation-delay: 0.7s; }
+    .animate-wander span:nth-child(8) { animation-delay: 0.8s; }
+
+
+    .section {
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: clip-path 0.5s ease;
+    }
+    #section1 { background: var(--ocean); z-index: 1; }
+
+    #section2 {
+      
+      z-index: 2;
+      clip-path: inset(50% 0 50% 0);
+      overflow: hidden;
+    }
+    #section2 .vertical-text {
+      position: relative;
+      z-index: 3;
+      color: var(--text-color);
+      font-size: 2vw;
+      opacity: .6;
+      text-align: center;
+    }
+
+    .parallax-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 1200%;
+     background: linear-gradient(var(--forest),var(--forest),var(--ocean), var(--forest),var(--forest),var(--forest),var(--forest)); 
+      z-index: 2;
+      transition: transform 0.5s ease;
+    }
+
+    .parallax-bg .image-container {
+      position: absolute;
+      width: 17vw;
+      text-align: center;
+      color: var(--text-color);
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size:2vh;
+    }
+    .parallax-bg .image-container-wide {
+      position: absolute;
+      width:20vw;
+      text-align: center;
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size:2vh;
+    }
+    
+    .parallax-bg .image-container h2,
+    .parallax-bg .image-container-wide h2 {
+      text-align: center;
+      margin-left: auto;
+      margin-right: auto;
+      font-family: "Cookie", cursive;
+      font-weight: 100;
+      font-style: normal;
+      width: 180%;
+      text-align: center;
+      padding: 0 1em;
+      margin-top: 0.5em;
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size:3vh
+    }
+    
+    .parallax-bg .image-container h3,
+    .parallax-bg .image-container-wide h3 {
+      font-family: "Poiret One", sans-serif;
+      font-weight: bolder;
+      font-style: italic;
+    }
+    .parallax-bg .image-container h1,
+    .parallax-bg .image-container-wide h1 {
+      font-family: "Poiret One", sans-serif;
+      font-weight: bolder;
+      font-style: italic;
+      font-size: 3vh;
+      width: 150%;
+    }
+  
+    .parallax-bg .image-container img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }.parallax-bg .image-container-wide img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+    .pos-1 { top: 10%; left: 10%; }
+    .pos-2 { top: 12%; right: 10%;}
+    .pos-3 { top: 16%; left: 10%; }
+    .pos-4 { top: 20%; right: 20%; }
+    .pos-5 { top: 41%; left: 8%; }
+    .pos-6 { top: 27%; left: 20%; }
+    .pos-7 { top: 28%; right: 20%; }
+    .pos-8 { top: 33%; right: 12%; }
+    .pos-9 { top: 34%; left: 10%; }
+    .pos-10 { top: 41%; right: 14%; }
+    .pos-11 {top:37%; left:40%}
+
+    @media (max-width: 1600px) {
+      .parallax-bg .image-container h2,
+      .parallax-bg .image-container-wide h2 {
+      width: 210% !important;
+      }
+    }
+    @media (max-width: 920px) {
+      body { overflow: hidden; height: 100vh; }
+      .section { position: absolute; width: 100vw; height: 100vh; }
+      #section2 { overflow: hidden; }
+      .parallax-bg { position: fixed; height: 10000%; }
+      .parallax-bg .image-container,
+      .parallax-bg .image-container-wide {
+        position: relative;
+        width: 80vw;
+        margin: 2rem auto;
+        left: 0;
+        top: auto;
+      }
+      #section2 .vertical-text,
+      #section3 .vertical-text {
+        font-size: 4vw;
+        position: hidden;
+        top: 5vh;
+        opacity: .6;
+      }
+      #section1 h1 { 
+        font-size: 14vw; 
+        margin-bottom:4px; 
+    }
+      .nav-lines { 
+        display: none; 
+    }
+        .parallax-bg .image-container h2,
+        .parallax-bg .image-container-wide h2 {
+      width: 100% !important
+    }
+    .parallax-bg .image-container h3,
+    .parallax-bg .image-container-wide h3 {
+      margin-bottom:25px;
+    }
+    .starter {
+      height:100vh;
+      background-color:var(--forest);
+    }
+    }  
+.spacer {
+  height:5px;
+}
+h1{
+  text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+  font-family: 'Bestie Seventy';
+
+
+}
+.vertical-text{
+  text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+
+}
+@font-face {
+      font-family: 'Bestie Seventy';
+      src: url('styles/Bestie Seventy.ttf') format('truetype');
+      font-display: swap;
+    }
+  </style>
+</head>
+<body>
+  <include-html src="nav2.html"></include-html>
+
+    <div id="section1" class="section">
+        <h1>The Magnet Art Gallery: 
+            <div></div><span class="animate-wander"><span>W</span><span>a</span><span>n</span><span>d</span><span>e</span><span>r</span></span></h1>
+        </div>
+    
+
+  <div id="section2" class="section">
+    <div class="parallax-bg">
+      <div class="starter"></div>
+      <div class="image-container-wide pos-1">
+        
+        <img src="Magnet-Art-Images/photo-output 5.png" alt="Art 1">
+        <div class="spacer"></div>
+        <h2>- Neveah Armstrong </h2>
+      </div>
+      <div class="image-container-wide pos-2">
+        <h1>Endless Dreams</h1>
+        <img src="Magnet-Art-Images/photo-output 6.png" alt="Art 2">
+        <h2>This Painting is meant to express wonder, a longing for exploration of the unknown and the infinite possibilities the world has to offer. It should awaken a feeling of admiration for the natural world and inspire the viewer.</h2>
+        
+        <div class="spacer"></div>
+        <h2>- Jade Jiang </h2>
+        <h3>Acrylic Paint   11 x 24</h3>
+      </div>
+      <div class="image-container pos-3">
+        <h1>misc. lot</h1>
+        <img src="Magnet-Art-Images/photo-output 2.png" alt="Art 3">
+        <h2>The wanderlust of one doesn't come from the places one ends up so much as the people in them.</h2>
+        
+        <div class="spacer"></div>
+        <h2>- Peter Snowden</h2>
+        <h3>Lino print (ink)    9 x 12</h3>
+      </div>
+      <div class="image-container pos-4">
+        <h1>Cat & Mouse</h1>
+        <img src="Magnet-Art-Images/photo-output 7.png" alt="Art 4">
+        <h2>Landscape based on the ideas of how Dr. Seuss has the unnatural percieved as reality with 5 different Mountain Views. This percieves the elasticity and wandering of the mind in the different paths of imagination that it strolls through.</h2>
+        
+        <div class="spacer"></div>
+        <h2>- Colyn Giron</h2>
+        <h3>Oil & Acrylic Paint   28 x 48</h3>
+      </div>
+      <div class="image-container-wide pos-5">
+        <h1>Pack Yr Romantic Mind</h1>
+        <img src="Magnet-Art-Images/photo-output 3.png" alt="Art 5">
+        <h2>This piece was kind of just an exploration of my own creativty. I wanted to slap some colors down and draw up whatever came up to mind. I think it really makes your eyes wander.</h2>
+        <div class="spacer"></div>
+        <h2>- Ali Garner</h2>
+        <h3>Watercolor & Pen   16 x 20</h3>
+    </div>
+      <div class="image-container-wide pos-6">
+        <h1>Lost in Thought</h1>
+        <img src="Magnet-Art-Images/photo-output 4.png" alt="Art 6">
+        <h2>A visual take on the beauty of a mind lost in thought while wondering through unseen landscapes.</h2>
+        
+        <div class="spacer"></div>
+        <h2>- Jackie Mize</h2>
+        <h3>Colored Pencil  13 x 13</h3>
+      </div>
+      <div class="image-container-wide pos-7">
+        <h1>No-man's-land</h1>
+        <img src="Magnet-Art-Images/photo-output.png" alt="Art 7">
+        <h2>Following the theme wander, this piece is meant to bring a sense of self wandering in an open abyss of sand dunes. Setting placed in the Arabic desert, where wandering spirits reside, wandering into the sun.</h2>
+        
+        <div class="spacer"></div>
+        <h2>- Maddy Barnes</h2>
+        <h3>Oil Paint   18 x 24</h3>
+      </div>
+      <div class="image-container pos-8">
+        <h1>The Escape from Hell</h1>
+        <img src="Magnet-Art-Images/IMG_6839__1_-removebg-preview 2.png" alt="Art 8">
+        <h2>This piece connects to the theme 'wander' by showing the journey taken by orpheus and eurydice between two worlds, the over-world and the underworld, in which orpheus wanders far to bring his beloved wife from the dead.</h2>
+        
+        <div class="spacer"></div>
+        <h2>- Ada Snowden</h2>
+        <h3>Grapite   9 x 12</h3>
+      </div>
+      <div class="image-container-wide pos-9">
+        <h1>Collecting Dust</h1>
+        <img src="Magnet-Art-Images/IMG_6841 (1) Background Removed 2.png" alt="Art 9">
+        <h2>This piece symbolizes the intellectual and existential journey of self discover, with the desk representing reflection and the skull reminding us of mortality. The light suggests moments of insight or clarity amidst the darkness of uncertainty. The piece connects to the theme of 'wander' by illustrating how our search for meaning is intertwined with an awareness of life's fleeting nature.</h2>
+        
+        <div class="spacer"></div>
+        <h2>- Tre Cathey</h2>
+        <h3>Oil Pastel   16 x 20</h3>
+      </div>
+      <div class="image-container-wide pos-10">
+        <h1>I Wonder Why I Wander</h1>
+        <img src="Magnet-Art-Images/IMG_6842 (1) Background Removed 2.png" alt="Art 10">        
+        
+        <h2>- Bryant Price</h2>
+      </div>
+      <div class="image-container-wide pos-11">
+        <h1>I Wonder Why I Wander</h1>
+        <img src="Magnet-Art-Images/3d-Still.png" alt="Art 11">       
+        <h2>This piece depicts a journey through an unknown, magical landscape. Its winding steps, tranquil pond, and glowing cave invites the viewers to let their eyes - wander - and exploer its enchanting features.</h2> 
+        <div class="spacer"></div>
+        <h2>- Nicole Yang</h2>
+      </div>
+    </div>
+    
+    <div class="vertical-text">
+        <div>Art</div>
+        <div>Is</div>
+        <div>The</div>
+        <div>Compass</div>
+        <div>For</div>
+        <div>A</div>
+        <div>Wandering</div>
+        <div>Soul</div>
+  </div>
+  
+</div>
+
+
+<script>
+  const section1 = document.getElementById('section1');
+  const section2 = document.getElementById('section2');
+  const parallaxBg = document.querySelector('.parallax-bg');
+  const scrollSpeed = 1.6;
+  let revealed = false;
+  let scrollPosition = 0;
+  let maxScroll = 0;
+  
+  function calculateMaxScroll() {
+    const art10 = document.querySelector('.pos-10');
+    if (art10) {
+      const rect = art10.getBoundingClientRect();
+      const scrollTop = window.scrollY || window.pageYOffset;
+    
+      maxScroll = rect.top + scrollTop - window.innerHeight * .5;
+    } else {
+      maxScroll = window.innerHeight * 6;
+    }
+  }
+
+  function revealSection() {
+    section2.style.clipPath = 'inset(0 0 0 0)';
+    revealed = true;
+  }
+
+  function hideSection() {
+    section2.style.clipPath = 'inset(50% 0 50% 0)';
+    revealed = false;
+  }
+
+  function handleScroll(deltaY) {
+    deltaY = deltaY * scrollSpeed
+    if (!revealed) {
+      if (deltaY > 0) {
+        calculateMaxScroll();
+        revealSection();
+      }
+    } else {
+      const newPos = scrollPosition - deltaY;
+      if (newPos < -maxScroll - 2500) {
+        //start
+        scrollPosition = 0;
+        parallaxBg.style.transition = 'none';
+        parallaxBg.style.transform = `translateY(${scrollPosition}px)`;
+        parallaxBg.getBoundingClientRect();
+        parallaxBg.style.transition = 'transform 0.5s ease';
+       
+      } else if (newPos > 0) {
+        parallaxBg.style.transition = 'none';
+        parallaxBg.style.transform = `translateY(${scrollPosition}px)`;
+        parallaxBg.getBoundingClientRect();
+        parallaxBg.style.transition = 'transform 0.5s ease';
+        
+        
+      } else {
+        scrollPosition = newPos;
+        parallaxBg.style.transition = 'transform 0.5s ease';
+        parallaxBg.style.transform = `translateY(${scrollPosition}px)`;
+      }
+      // allow hiding when at top
+      if (scrollPosition === 0 && deltaY < 0) {
+        hideSection();
+      }
+    }
+  }
+
+  window.addEventListener('wheel', e => {
+    e.preventDefault();
+    handleScroll(e.deltaY);
+  }, { passive: false });
+
+  let touchStartY = 0;
+  window.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: false });
+  window.addEventListener('touchmove', e => {
+    const touchEndY = e.touches[0].clientY + 1000;
+    handleScroll((touchStartY - touchEndY) * 0.8);
+    touchStartY = touchEndY;
+  }, { passive: false });
+
+  window.addEventListener('load', calculateMaxScroll);
+  window.addEventListener('resize', calculateMaxScroll);
+</script>
+</body>
+</html>

@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script type="module" src="nav.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/GLTFLoader.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - The Magnet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        
+        :root {
+            --coral: #e89082;
+            --forest: #3b574f;
+            --ocean: #4e83aa;
+            --lavender: #c1c2e4;
+            --sand: #dac4bc;
+            --dark-accent: #2a403b;
+           
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background: var(--ocean);
+            color: var(--coral);
+            overflow-x: hidden;
+        }
+
+        .about-container {
+            padding: 120px 5% 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .about-header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .about-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 3.5rem;
+            color: var(--coral);
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .about-subtitle {
+            font-size: 1.2rem;
+            color: var(--lavender);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+            justify-content: center;
+            /* center grid items */
+            justify-items: center;
+            /* center contents */
+        }
+
+        .about-section {
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            border: 1px solid var(--lavender);
+        }
+
+        .about-section:hover {
+            transform: translateY(-5px);
+            border-color: var(--coral);
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+            font-size: 1.8rem;
+            color: var(--coral);
+            margin-bottom: 20px;
+            letter-spacing: -0.01em;
+        }
+
+        .section-content {
+            line-height: 1.8;
+            color: var(--lavender);
+        }
+
+        .teams-container {
+            margin-top: 80px;
+        }
+
+        .team-section {
+            margin-bottom: 80px;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--coral), var(--lavender));
+        }
+
+        .team-section-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .team-section-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--coral);
+        }
+
+        .team-section-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 2.2rem;
+            color: var(--sand);
+            margin-bottom: 10px;
+            letter-spacing: -0.02em;
+        }
+
+        .team-section-description {
+            color: var(--ocean);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .executive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(193, 194, 228, 0.1), rgba(232, 144, 130, 0.1));
+            border-radius: 10px;
+            justify-content: center;
+            justify-items: center;
+        }
+
+        .team-grid {
+            display: grid;
+            columns: 4;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            justify-content: center;
+            justify-items: center;
+        }
+
+        .literature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            justify-content: center;
+            justify-items: center;
+            margin: 0 auto;
+            max-width: 1000px;
+        }
+
+        .team-member {
+            text-align: center;
+            padding: 20px;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            border: 1px solid transparent;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+            border-color: var(--coral);
+            background: var(--forest);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .member-image {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 3px solid var(--lavender);
+            transition: all 0.3s ease;
+        }
+
+        .team-member:hover .member-image {
+            border-color: var(--coral);
+            transform: scale(1.05);
+        }
+
+        .executive .member-image {
+            width: 200px;
+            height: 200px;
+            border-color: var(--coral);
+        }
+
+        .member-name {
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+            font-size: 1.3rem;
+            color: var(--lavender);
+            margin: 10px 0 5px;
+        }
+
+        
+
+        .member-role {
+            color: var(--coral);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .member-bio {
+            font-size: 0.9rem;
+            color: var(--sand);
+            line-height: 1.6;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        /* Floating elements from index */
+        .floating {
+            position: fixed;
+            background: var(--lavender);
+            opacity: 0.3;
+            border-radius: 50%;
+            z-index: -1;
+            animation: float 15s ease-in-out infinite;
+        }
+
+        .floating:nth-child(1) {
+            width: 150px;
+            height: 150px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+            background: var(--coral);
+        }
+
+        .floating:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            top: 60%;
+            left: 80%;
+            animation-delay: -2s;
+            animation-duration: 18s;
+            background: var(--ocean);
+        }
+
+        .floating:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            top: 30%;
+            left: 80%;
+            animation-delay: -5s;
+            animation-duration: 12s;
+            background: var(--lavender);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(-20px, -20px);
+            }
+
+            100% {
+                transform: translate(0, 0);
+            }
+        }
+
+        @font-face {
+            font-family: 'Bestie Seventy';
+            src: url('styles/Bestie Seventy.ttf') format('truetype');
+            font-display: swap;
+        }
+
+        @media (max-width: 768px) {
+            .about-container {
+                padding: 80px 15px 40px;
+            }
+
+            .about-header {
+                padding: 25px 15px;
+                margin-bottom: 40px;
+            }
+
+            .about-title {
+                font-size: 2.2rem;
+                margin-bottom: 15px;
+            }
+
+            .about-subtitle {
+                font-size: 1rem;
+                line-height: 1.5;
+            }
+
+            .about-grid {
+                gap: 20px;
+            }
+
+            .about-section {
+                padding: 20px;
+            }
+
+            .team-section {
+                padding: 25px 15px;
+                margin-bottom: 40px;
+            }
+
+            .team-section-title {
+                font-size: 1.8rem;
+            }
+
+            .team-section-description {
+                font-size: 1rem;
+                padding: 0 10px;
+            }
+
+            .team-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                /* Force 2 columns on mobile */
+                gap: 20px;
+                margin: auto;
+            }
+
+            /* Style for the third item in each team section */
+            .team-grid .team-member:nth-child(3) {
+                grid-column: 1 / -1;
+                /* Span full width */
+                max-width: 250px;
+                /* Limit width */
+                margin: 0 auto;
+                /* Center horizontally */
+            }
+
+            /* Optional: Adjust the animation delay for centered items */
+            .team-grid .team-member:nth-child(3) {
+                animation-delay: 0.4s;
+            }
+
+            .team-member {
+                padding: 15px;
+            }
+
+            
+
+
+            .member-image {
+                width: 150px;
+                height: 150px;
+            }
+
+            .executive .member-image {
+                width: 180px;
+                height: 180px;
+            }
+
+            .member-name {
+                font-size: 1.1rem;
+            }
+
+            .member-role {
+                font-size: 0.9rem;
+            }
+
+            .member-bio {
+                font-size: 0.85rem;
+                line-height: 1.5;
+                padding: 0 10px;
+            }
+
+            /* Add card-style animation for mobile */
+            .team-member {
+                transform: translateY(20px);
+                opacity: 0;
+                animation: fadeInUp 0.6s ease forwards;
+            }
+
+            .team-member:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+
+            .team-member:nth-child(3) {
+                animation-delay: 0.4s;
+            }
+
+            /* Adjust floating elements for mobile */
+            .floating {
+                opacity: 0.2;
+            }
+
+            .floating:nth-child(1) {
+                width: 100px;
+                height: 100px;
+            }
+
+            .floating:nth-child(2) {
+                width: 120px;
+                height: 120px;
+            }
+
+            .floating:nth-child(3) {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        /* For very small screens, switch to single column */
+        @media (max-width: 480px) {
+            .team-grid {
+                grid-template-columns: 1fr;
+                /* Single column */
+            }
+
+            .team-grid .team-member:nth-child(3) {
+                grid-column: auto;
+                /* Reset grid column */
+                max-width: 100%;
+                /* Full width */
+            }
+        }
+
+        /* Add fade-in animation for team members */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Add intersection observer for animation on scroll */
+    </style>
+</head>
+
+<body>
+    <include-html src="nav2.html"></include-html>
+
+    <!-- Add floating elements -->
+    <div class="floating"></div>
+    <div class="floating"></div>
+    <div class="floating"></div>
+
+
+    <div class="about-container">
+        <div class="about-header">
+            <h1 class="about-title">About The Magnet</h1>
+            <p class="about-subtitle">Exploring creativity, culture, and artistic expression through our unique lens.
+            </p>
+        </div>
+
+        <div class="about-grid">
+            <div class="about-section">
+                <h2 class="section-title">Our Mission</h2>
+                <p class="section-content">
+                    The Magnet serves as a platform for emerging artists, writers, and creators to showcase their work
+                    and connect with a broader audience. We believe in the power of artistic expression to inspire,
+                    challenge, and transform perspectives.
+                </p>
+            </div>
+
+            <div class="about-section">
+                <h2 class="section-title">Our Vision</h2>
+                <p class="section-content">
+                    We envision a world where creative expression knows no bounds. Through our platform, we aim to break
+                    down barriers between different art forms and foster a community of innovative thinkers and
+                    creators.
+                </p>
+            </div>
+
+            <div class="about-section">
+                <h2 class="section-title">Our Values</h2>
+                <p class="section-content">
+                    • Creativity without boundaries<br>
+                    • Inclusive artistic expression<br>
+                    • Cultural diversity<br>
+                    • Innovation in art<br>
+                    • Community engagement
+                </p>
+            </div>
+        </div>
+
+        <div class="teams-container">
+            <!-- Executive Leadership -->
+            <div class="team-section">
+                <div class="team-section-header">
+                    <h2 class="team-section-title">Executive Leadership</h2>
+                    <p class="team-section-description">The visionaries guiding The Magnet's creative direction and
+                        growth.</p>
+                </div>
+                <div class="executive-grid">
+                    <div class="team-member executive">
+                        <h3 class="member-name">Debra Stewart</h3>
+                        <p class="member-role">Chief Executive Editor</p>
+                        <p class="member-bio">Leading The Magnet's creative vision and strategic direction.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Literature Team -->
+            <div class="team-section">
+                <div class="team-section-header">
+                    <h2 class="team-section-title">Literature Team</h2>
+                    <p class="team-section-description">Curating compelling narratives and powerful written expressions.
+                    </p>
+                </div>
+                <div class="literature-grid">
+                    <div class="team-member">
+                        <h3 class="member-name">Katherine Marks</h3>
+                        <p class="member-role">Literature Director</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Micah Upton</h3>
+                        <p class="member-role">Literary writer</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Gioia Carp</h3>
+                        <p class="member-role">Literary writer</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Gray Reynolds</h3>
+                        <p class="member-role">Literary writer</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Julia Roberts</h3>
+                        <p class="member-role">Literary writer</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Mckenna Barnes</h3>
+                        <p class="member-role">Literary writer</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Lilly A. Chattin</h3>
+                        <p class="member-role">Literary writer</p>
+                    </div>
+
+                    <div class="team-member">
+                        <h3 class="member-name">Abi Mize</h3>
+                        <p class="member-role">Literary writer</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">J McGill</h3>
+                        <p class="member-role">Literary writer</p>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <!-- Art Team -->
+            <div class="team-section">
+                <div class="team-section-header">
+                    <h2 class="team-section-title">Art Team</h2>
+                    <p class="team-section-description">Bringing visual stories to life through various mediums.</p>
+                </div>
+                <div class="team-grid">
+                    <div class="team-member">
+                        <h3 class="member-name">Tre Cathey</h3>
+                        <p class="member-role">Art Leader</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Nicole Yang</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Nevaeh Armstrong</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Jason Jordan</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+                    <div class="team-member">
+
+                        <h3 class="member-name">Evaden Syasn</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+
+                    <div class="team-member">
+                        <h3 class="member-name">Peter Snowden</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Ali Garner</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Ada Snowden</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Bryant Price</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Jade Jiang</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Jackie Mize</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Colyn Giron </h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Maddy Barnes</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Logistics Team -->
+            <div class="team-section">
+                <div class="team-section-header">
+                    <h2 class="team-section-title">Logistics</h2>
+                    <p class="team-section-description">Coordinating every detail to keep the journal moving seamlessly
+                    </p>
+                </div>
+                <div class="literature-grid">
+                    <div class="team-member">
+                        <h3 class="member-name">Boran Aljafari</h3>
+                        <p class="member-role">Director Of Logistics</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Colson Bailey</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Annily Nguyen</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Ella Stewart</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Evie Brockhurst</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Kennedy Bunting</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Kyla Hawkins</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+
+                    <div class="team-member">
+                        <h3 class="member-name">Rainey Haralson</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Tien Phan</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Zoey Bailey</h3>
+                        <p class="member-role">Team member</p>
+                    </div>
+
+                </div>
+            </div>
+            <!-- Film Team -->
+            <div class="team-section">
+                <div class="team-section-header">
+                    <h2 class="team-section-title">Film Team</h2>
+                    <p class="team-section-description">Crafting compelling visual narratives through motion pictures.
+                    </p>
+                </div>
+                <div class="team-grid">
+                    <div class="team-member">
+                        <h3 class="member-name">Peter Snowden</h3>
+                        <p class="member-role">Film Director</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Lainey Howard</h3>
+                        <p class="member-role">Film Cordinator</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Kristan Reyes</h3>
+                        <p class="member-role">Film Creator</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Jimmy Gonzalez</h3>
+                        <p class="member-role">Film Maker</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Nora Manley</h3>
+                        <p class="member-role">Film Maker</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Technology Team -->
+            <div class="team-section">
+                <div class="team-section-header">
+                    <h2 class="team-section-title">Web Design Team</h2>
+                    <p class="team-section-description">Created the 2024-2025 Magnet's Website.</p>
+                </div>
+                <div class="team-grid">
+                    <div class="team-member">
+
+                        <h3 class="member-name">Omar Elsayed</h3>
+                        <p class="member-role">Tech Director</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">DJ Doumitt</h3>
+                        <p class="member-role">Lead Web Developer</p>
+                    </div>
+                    <div class="team-member">
+                        <h3 class="member-name">Oscar Zheng</h3>
+                        <p class="member-role">Web Developer</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            document.querySelectorAll('.team-member').forEach((member) => {
+                observer.observe(member);
+            });
+        });
+    </script>
+
+</body>
+
+</html>

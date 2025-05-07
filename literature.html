@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="module" src="nav.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/GLTFLoader.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Magnet Literary Journal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Open Sans', sans-serif; background: #4e83aa; color: #333; line-height: 1.6; overflow-x: hidden }
+
+    .page-transition {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: linear-gradient(to bottom right, #4e83aa, #4e83aa); 
+      z-index: 9999;
+      transform-origin: left center;
+      transform: rotateY(0deg);
+      transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+      backface-visibility: hidden;
+      perspective: 1000px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 2rem;
+      color: #ffffff;
+    }
+
+    .page-transition h1 {
+      font-family: 'Bestie Seventy', cursive;
+      font-size: 4rem;
+      color: #e89082;
+      margin-bottom: 2rem;
+      text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .page-transition p {
+      font-size: 1.25rem;
+      max-width: 700px;
+      color: #f0f8ff;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+    }
+
+    .page-transition.flip {
+      transform: rotateY(-90deg);
+      opacity: 0;
+    }
+
+    header { text-align: center; padding: 2rem 1rem; background: #fff; border-bottom: 1px solid #e0e0e0; }
+    header h1 { font-family: 'Lora', serif; font-size: 2rem; color: #222; }
+    header p { font-size: 1rem; color: #555; }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      justify-content: center; 
+      justify-items: center;
+    }
+
+    .book-slide {
+      position: relative;
+      width: 15rem;
+      height: 40vh;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      overflow: hidden;
+      justify-content: center; 
+      justify-items: center;
+      
+    }
+
+    .book-cover {
+      position: absolute;
+      width: 15rem;
+      height: 50vh;
+      
+      background: #ff9a9a;
+    }
+
+    .book-top {
+      position: absolute;
+      width: 100%;
+      height: 50vh;
+      
+      left: 0;
+      object-fit: contain;
+      z-index: 2;
+      transition: transform 0.6s ease, opacity 0.6s ease;
+    }
+
+    .book-slide:hover .book-top {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+
+    .book-content {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 50vh;
+      background: rgba(255,255,255,0.95);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .book-title {
+      font-family: 'Lora', serif;
+      font-size: 1.1rem;
+      margin-bottom: 0.25rem;
+      color: #222;
+    }
+
+    .book-author {
+      font-size: 0.875rem;
+      color: #777;
+      margin-bottom: 1rem;
+    }
+
+    .book-body {
+      font-size: 0.9rem;
+      color: #444;
+      overflow-y: auto;
+      flex-grow: 1;
+      padding-right: 0.5rem;
+    }
+
+    .book-body::-webkit-scrollbar {
+      width: 6px;
+    }
+    .book-body::-webkit-scrollbar-thumb {
+      background-color: #bbb;
+      border-radius: 3px;
+    }
+
+    @media (max-width: 600px) {
+      
+      header h1 { font-size: 1.75rem; }
+      .book-body { font-size: 0.85rem; }
+      .book-cover {
+        position: relative;
+        width: 15rem;
+        height: 40vh;
+        background: #ff9a9a;
+  }
+  .book-top {
+    width: 100%;
+    height: auto;
+    margin-top: 3vh !important;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+    }
+    @font-face {
+      font-family: 'Bestie Seventy';
+      src: url('styles/Bestie Seventy.ttf') format('truetype');
+      font-display: swap;
+    }
+  </style>
+</head>
+
+<body>
+  <include-html src="nav2.html"></include-html>
+
+  <div class="page-transition" id="pageTransition">
+    <h1>The Magnet Literary Journal</h1>
+    <p>Welcome to our Spring 2025 issue: <em>"Wander"</em> <br> Scroll to continue </p>
+  </div>
+  <header>
+    <p><h1 class="Text-5xl md:text-7xl font-bold mb-4">Welcome to our Spring 2025 issue: <em>"Wander"</em>—exploring journeys both literal and metaphorical. </h1></p>
+  </header>
+  <main>
+    <div class="grid-container">
+      <div class="book-slide">
+        <div class="book-cover">
+          <img class="book-top" src="/Literature-Covers/No-Man's-Land.png" alt="Book cover" />
+          
+          <div class="book-content">
+            <div class="book-title">No-Man's-Land</div>
+            <div class="book-author">by Mckenna Barnes</div>
+            <div class="book-body">
+              <p>
+                It was quiet. The howling of the wind being the only prominent figure in the wasteland, barren and dull. Sand dusted across more sand, sandaled feet leaving lines for foot prints in the hot sand. Behind followed his fellow travelers, travelers of the underground. Those who weren't properly guided to the city of light, those who fall short of essence. They were left to wander— to stray amongst the living, the vast desert that stranded and beat them before death.<br><br>
+  
+                A man with sandaled feet and a camel, living and lively. His features calm yet strained, while he lead the way forward, his eyes scanning the horizon for something—anything—beyond the endless dunes. His robes, once vibrant, had dulled to the same weary beige as the desert itself, worn by time and travel. The camel at his side snorted, shaking its head, sending a fine spray of dust into the already choked air.<br><br>
+  
+                Behind him, the travelers shuffled in silence, their forms barely distinguishable from the shifting sands. They were not ghosts, not entirely, but neither were they fully present in the world of the living. Their eyes were hollow, reflecting the lost glimmers of souls who had once sought the fabled city of light but had failed. Now, they followed, clinging to the footprints left behind in hopes of finding another way.<br><br>
+  
+                The man did not speak to them, and they did not ask for words. They only followed, their presence a quiet weight pressing against his back.<br><br>
+  
+                At the crest of a dune, he halted, shielding his eyes against the burning sun. A shape loomed in the distance, jagged and dark against the blinding sky. It was not the city—he knew that much—but it was something. A ruin, perhaps. A remnant of a time before the desert claimed all.<br><br>
+  
+                The camel groaned, uneasy. The wind whispered warnings, carrying the voices of those long buried beneath the sand. But the man had no choice.<br><br>
+  
+                He took a step forward, and the travelers followed, their silent procession moving toward whatever fate lay ahead.<br><br>
+  
+                At first, it seemed like a trick of the heat, a mirage conjured by the weary mind. But as the man descended the dune, the jagged ruin ahead became something else—something impossible.<br><br>
+  
+                The valley stretched beyond the dunes, cutting through the wasteland like a scar of radiance. It was as if the desert had split open to reveal something hidden beneath, something untouched by time. Light shimmered within it, not from the harsh sun above but from within the valley itself, casting golden streams that wove between towering pillars of crystalline stone.<br><br>
+  
+                The man stopped, breath catching in his throat. The travelers behind him stirred, their hollow gazes flickering with something unfamiliar—hope, or perhaps fear. They had wandered too long in the empty sands, forgotten by life and death alike. And yet, here it was. The Valley of Light.<br><br>
+  
+                His camel shifted nervously, sensing the unnatural stillness of the place. There was no wind here, no shifting sands—only the steady hum of something ancient, something waiting. The valley pulsed like a heartbeat, the light bending and twisting, as though aware of their presence.<br><br>
+  
+                The man hesitated. Was this the City of Light they had once sought? Or was it something else entirely—something not meant to be found?<br><br>
+  
+                Behind him, the travelers, those lost souls of the underground, drifted forward. For the first time, they moved with purpose, drawn toward the valley with silent reverence. The man gripped the camel's reins, feeling the weight of the journey behind him, the unknown ahead.<br><br>
+  
+                The valley called. And whether it led to salvation or something far worse, there was only one path left to take.<br><br>
+  
+                He stepped forward, and the light swallowed him whole.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-slide">
+        <div class="book-cover">
+          <img class="book-top" src="/Literature-Covers/direction.png" alt="Book cover" />
+          
+          <div class="book-content">
+            <div class="book-title">Direction</div>
+            <div class="book-author">by Micah Upton</div>
+            <div class="book-body">
+              <p>
+              I was completely and utterly lost. Not physically, of course; I knew exactly where I was. I looked up at the people around me expecting some kind of help, but all I got were nods of approval as if they thought I knew what I was doing. I was frustrated—couldn't they see that I needed help? Finally, my friend recognized that I had no idea where we were going and tried to help me:<br><br>
+
+              "...Three, four, one, two, three, and bridge! Two, three..."<br><br>
+
+              I smiled and nodded, and, gradually, my drum kit and the groove with it returned. The feeling I got from playing in a band like this was beyond anything else that I had experienced so far. How fascinating it is that something as simple and intrinsic to the experience of life as rhythm and melody could have such an impact not just on the people listening to it, but even the player. Unfortunately, this would be my last time playing with this group of friends.<br><br>
+
+              It was my senior year of high school, and I was ranked number four in a class of about 300 students. At the beginning of the year, I set my goal: to be valedictorian. Of course, I knew that to achieve this goal, I was going to have to give up some things, and I decided playing drums for this band was one of them. It was something that I enjoyed, but I knew that this goal for school was more important than doing something just because I enjoyed it.<br><br>
+
+              "Hey man, thanks for playing with us, I really hope you stick with it."<br><br>
+
+              "You're still going to play though, right? You're really good!"<br><br>
+
+              As much as I appreciated all the compliments from my friends as I left, there was a part of me that felt like they didn't truly understand why I was quitting. They were so distracted by their love for music, and I knew their academic performance was suffering. The only way for me to achieve true success would be to stand out from everyone else, do things no one else was doing, make sacrifices that no one else was making.<br><br>
+
+              * * *<br><br>
+
+              "Nevertheless, I want each one of you to know that, despite what your peers may tell you, success is not a lofty reward reserved for the rich few; it is accessible to all—all who are willing to put forth their time, their labor, and their passion. Thank you."<br><br>
+
+              The rest of my class erupted in a percussive symphony of applause, and I breathed a heavy sigh of relief as I walked from the graduation stage. I had done it. I achieved my goal. Valedictorian. I stood out, I was number one, I was the best. It was a moment that didn't quite feel real; a full year of hard work had finally culminated in this one brief moment. As it passed with the sound of thunder, a hurricane of thoughts whirled through my mind, and my attention was caught by one.<br><br>
+
+              What now?<br><br>
+
+              It was a natural, almost obvious question, but I began to feel uneasy about it. For a moment, I forgot what I had done all this for; all this—the hundreds of hours I had spent listening, studying, reading, writing, working ahead—what was it all for? It was a moment, and as it passed, I reassured myself: as valedictorian, a wide new door of scholarship and work opportunities would open, and I could finally move on to my next goal, which would be—well, which would be college, of course. The better I performed in college, the more likely I would be to get a high-level degree and, therefore, be successful. This line of reasoning took me far enough into the future to satisfy my mind, and that question—what now?—left, flew back into the storm as the thunder died.<br><br>
+
+              At the end of the graduation ceremony, through the fog of congratulations and kind exchanges, a familiar voice shone through: it was my old band mate, Nick—he played the guitar, so we would call him "Pick-Nick". I had spent a lot of time with him before I decided to focus on more aspirational endeavors.<br><br>
+
+              "Hey, congrats on valedictorian!"<br><br>
+
+              "Hey, thanks!"<br><br>
+
+              "It's been a little while, hasn't it?"<br><br>
+
+              "Yeah, for sure." I didn't really know what to say. Sure, I hadn't talked to him very much over the past couple of months, but I had figured that Nick and I would go our separate ways; we were simply on different paths now.<br><br>
+
+              "Man, I was just thinking, you remember that time after we played at that place downtown, and that girl came up to Josh as we were leaving?"<br><br>
+
+              "I'm not sure, which Josh was it?"<br><br>
+
+              "The bass player, not the keys player. Don't you remember?"<br><br>
+
+              I laughed. "Oh yeah, I remember. Man, she was weird."<br><br>
+
+              "So, you got any plans for the summer?" he asked.<br><br>
+
+              "I'll be working some, how about you?"<br><br>
+
+              "Well, now that school's out, I'm hoping to have some more time to spend with the band. We've got a few more songs that we've been working on, and we're hoping to get some pretty good gigs."<br><br>
+
+              "Oh yeah, how's that been going?" I realized after I said it that I might have sounded a bit more irritable than I had intended to, but I didn't have time to correct myself.<br><br>
+
+              "Really not so great since you left. It's not easy finding a drummer as good as you. You know, I think we'd all really appreciate it if..."<br><br>
+
+              It was obvious what he was asking me to do; now that I had achieved my great goal of becoming valedictorian, Nick wanted me to rejoin the band—and I really did think about it for a split second. But it had been so long since I had last done anything with music, and I wasn't going back to something that I left for a reason; it just wouldn't work out. Besides, if I planned to continue my success in the future, this would only keep getting in the way.<br><br>
+
+              "I don't know, it's been almost a year since I last touched the drums, I'm not sure I'm really the best option for you. Besides..."<br><br>
+
+              "Besides what?"<br><br>
+
+              "Well, I was just thinking I should probably focus on other, more important things. This-"<br><br>
+
+              "This isn't important?"<br><br>
+
+              "Well-"<br><br>
+
+              "And haven't you accomplished your goal? What else do you need? Take some time to relax and do something you love. Or do you plan to spend every waking moment doing 'work' and leaving no time for things that actually matter?"<br><br>
+
+              "Things that actually matter? How much money has this band made you? How many scholarships has it gotten you? Being a valedictorian, being number one matters; success matters, not playing around with your friends hoping that one day you'll get the right gig at the right place, that one day you'll make it big, be the best. You're not making it anywhere in life if you think that that's what actually matters."<br><br>
+
+              He paused. "You cared."<br><br>
+
+              "What?"<br><br>
+
+              "You cared. You used to care; I could see it in the way you played, the way you moved. Every time we played together, I would look over at you, and you would look over at me; somehow, I—we—had this connection, the kind you only have when people are doing something they care about, together."<br><br>
+
+              "So what?"<br><br>
+
+              "I guess I just thought there might have been some of that left in you, and I really hoped you'd at least take the chance to come back to it."<br><br>
+
+              "Yeah, well it looks like there isn't."<br><br>
+
+              "Looks like it."<br><br>
+
+              * * *<br><br>
+
+              Four? Five? Six? I had lost count of how many hours I had spent sitting in my dorm room staring at my computer screen. The incessant, rhythmic click and clack of the keyboard kept reminding me of that one part of that one song, and I still barely had a paper. Of the fourteen required pages, I had just finished the first. I felt a crushing weight as I thought about how long this would take me at the current pace; not to mention all the other schoolwork I still had to do in the coming days. It was an overwhelming feeling that I was regrettably quite familiar with, but I knew the only way to get rid of it was to simply keep chipping away at the pile of work.<br><br>
+
+              My roommate walked in and looked at me. "What?" I asked, somewhat irritably.<br><br>
+
+              "Well good afternoon to you too. A couple of guys and I were about to go out to eat, and I was going to ask if you'd like to come along."<br><br>
+
+              "Sorry, I'm kind of in the middle of something right now."<br><br>
+
+              "But you haven't even heard where we're going yet. Don't you want to take a quick break from all that? I mean, I hardly ever see you not doing schoolwork; have some fun every once in a while."<br><br>
+
+              "Sorry, I really need to work on this paper right now; I've barely got one page done."<br><br>
+
+              "Wait, you're already working on that? You know that's not due for two weeks, right? I mean, do the math—fourteen pages, fourteen days? You got your page in for the day, just come along."<br><br>
+
+              "Sorry." I had only half heard him; I was so focused on what I was working on that I had barely looked up.<br><br>
+
+              "Well, suit yourself. If the world ended today, you'd regret it."<br><br>
+
+              I laughed to myself as he left the room. "If the world ended today." The world hadn't ended for a while; I doubted it would be that day.<br><br>
+
+              I sighed and refocused my full attention back on the paper. I had probably written fourteen pages already by this point, but it felt like every sentence I wrote was somehow wrong, like I kept messing up the rhythm and had to go back and fix it. At times when I wondered why I was even doing all this work, I reminded myself of what success meant to me: I needed to stand out, be the best, be number one. Everything I did had to be exactly right; I wasn't going to turn in a sub-optimal paper—not when I had so much time to work on it. I knew all my hard work would pay off someday; I just had to make it to graduation.<br><br>
+
+              * * *<br><br>
+
+              Graduation. The day was here, and I had a million feelings and emotions flurrying through my mind: I felt proud that I had made it so far without giving up, that I was the best; relief that it was finally over; and as the day went by, I thought. I thought about the past four years—what I had done, what I had accomplished. I thought about the years before that—everything in my life had led me to this place, this moment. It reminded me of how I felt at my high school graduation, I remarked to myself. I thought about the future—<br><br>
+
+              What now?<br><br>
+
+              The same question I had asked myself four years ago was repeated, and this time, I had no answer—not one that could satisfy me, at least. What now? And what then? And what after that? I suddenly felt the urge to plan the rest of my life from this moment to the end; was that what I was supposed to do? Something shifted.<br><br>
+
+              I was completely and utterly lost.<br><br>
+
+              It was now late in the evening, and for the first time in my life, I didn't know what I was going to do when I woke up in the morning. It felt like I was back playing with the band, and I didn't know where the downbeat was; I was helpless. I just couldn't see how I could have thought I had any sense of direction; I had been wandering through life; I had always been lost.<br><br>
+
+              My phone rang. I answered without looking at the number, only hoping that whatever it was would take my mind away from what I was feeling.<br><br>
+
+              "Hello?"<br><br>
+
+              "Hey, how's it going?"<br><br>
+
+              I knew I recognized the voice, paused for a moment, then realized: it was Nick. "Pick-Nick", my best friend from all those years ago who I hadn't spoken to for four years. It caught me so off guard, I didn't respond at first.<br><br>
+
+              "Hello? You there?"<br><br>
+
+              "Yeah, sorry, um, it's going well... how about you?"<br><br>
+
+              "Pretty good. Man, it has been a while. I heard you finally graduated; congratulations!"<br><br>
+
+              "Yeah, it has, and thanks."<br><br>
+
+              There was a moment of awkward silence.<br><br>
+
+              "So, what are your plans now?" he asked.<br><br>
+
+              "Why are you calling me?" I hated to sound so rude, but I hadn't talked to him for four years, and I knew we didn't leave things off on a high note. Why would he even want to talk to me?
+            </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-slide">
+        <div class="book-cover">
+          <img class="book-top" src="/Literature-Covers/a sparrow flight.png" alt="Book cover" />
+          
+          <div class="book-content">
+            <div class="book-title">A Sparrow's Flight</div>
+            <div class="book-author">by Lilly A. Chattin</div>
+            <div class="book-body">
+              <p>
+                It leapt from the nest<br>
+                On a gust of winter's breath<br>
+                Leaving warm, sweet safety<br>
+                For a long, cold journey<br><br>
+                
+                Longing for a life of adventure<br>
+                But in the cold dark of winter<br>
+                A wanderer with frigid wings<br>
+                Goes out to live its dream<br><br>
+                
+                Dreams of life lived abroad<br>
+                To new places, it feels called<br>
+                Without a worry for tomorrow<br>
+                Or a thought of pain or sorrow<br><br>
+                
+                What places can it reach<br>
+                Before it goes to sleep<br>
+                And dreams still more<br>
+                Of places held in store<br><br>
+                
+                All this it goes to see<br>
+                It simply wants to be<br>
+                A traveler who gladly sings<br>
+                When the air hits its wings<br><br>
+                
+                But the winds blow too cold<br>
+                And the sun sinks so low<br>
+                So it must turn its wing<br>
+                For home is a precious thing.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-slide">
+        <div class="book-cover">
+          <img class="book-top" src="/Literature-Covers/rise young dreamer.png" alt="Book cover" />
+          
+          <div class="book-content">
+            <div class="book-title">Rise, Young Dreamer</div>
+            <div class="book-author">by J McGill</div>
+            <div class="book-body">
+              <p>
+                Rise, young dreamer, let your voice ignite, <br>
+                A spark in the dark, a flame in the night. <br>
+                You are the echo of those who came before, <br>
+                Their whispers of wisdom now shaping your roar. <br><br>
+                
+                The world may tremble, the tides may turn, <br>
+                Yet within you, embers of greatness burn. <br>
+                No chain can shatter, no doubt can bind, <br>
+                The power of a fearless, unshaken mind. <br><br>
+                
+                Stand in the storm, let the thunder decree, <br>
+                You are more than their limits—you were born to be free. <br>
+                Write your own story, paint skies anew, <br>
+                For the future is waiting, and it starts with you.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-slide">
+        <div class="book-cover">
+          <img class="book-top" src="/Literature-Covers/I the wanderer.png" alt="Book cover" />
+          
+          <div class="book-content">
+            <div class="book-title">I, The Wanderer</div>
+            <div class="book-author">by Abi Mize</div>
+            <div class="book-body">
+              <p>
+                I move without destination nor plan in place<br>
+                Not a timeframe to make nor a schedule to follow.<br>
+                Hypnos, my constant companion,<br>
+                Meets me in the dark chill of night<br>
+                Ready for adventure.<br><br>
+                
+                We wander the paths near and far, close and wide.<br>
+                We travel the deepest oceans<br>
+                Seeking the treasures below.<br>
+                We climb the highest peaks<br>
+                Searching for answers.<br>
+                We cross the driest deserts<br>
+                Scouring for gems unearthed.<br><br>
+                
+                Until the early aether of morning<br>
+                When he must depart and I am left<br>
+                Wandering aimlessly without a true purpose<br>
+                Hoping to find what life has to offer.<br><br>
+                
+                A nomad I am, a nomad I stay<br>
+                Until my dying day<br>
+                When Thanatos and Charon<br>
+                Will guide me on a new adventure<br>
+                One that even I have never wandered.<br>
+                One where Hades will greet me at the gates<br>
+                Cerberus by his side<br>
+                Ready to welcome me home.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-slide">
+        <div class="book-cover">
+          <img class="book-top" src="/Literature-Covers/when the world was ours.png" alt="Book cover" />
+          
+          <div class="book-content">
+            <div class="book-title">When The World Was Ours</div>
+            <div class="book-author">by Katherine Marks</div>
+            <div class="book-body">
+              <p>
+                Dear Indie,<br><br>
+                
+                I don't know how to write a letter, so I hope you read this in my voice.<br><br>
+                
+                Today I ran into the alleyway behind great grandma's house. Stumbling upon this alleyway made me a little sad. There is nothing to it, yet the dead grass and crooked fences that wrap around this dirt path arouse some feelings of nostalgia.<br><br>
+                
+                Granny and I decided to go and pack up a few more things, obviously intending to reminisce on good times and talk about the history of the house. However, I wasn't expecting to feel so nostalgic about that dirt path. It made me think of you.<br><br>
+                
+                When we were driving down and passing that dirt path behind grandma's old yellow house, I noticed a cat. I don't brake, though I should have. I should have looked down that alleyway a little longer, but I knew we had a lot to get done. I didn't think much of that cat at the time. When granny and I left I pointed that cat out. I asked her if she remembered when I would do that same thing waiting for you. She laughed. She said "Maybe that's Indie waiting on you." Now that is all I can think about.<br><br>
+                
+                Do you believe in reincarnation? We both know I have no religion, but sometimes my mind wanders. Y'know, maybe you were that cat.<br><br>
+                
+                I remember sitting along great grandma's fence waiting for your mom's little red car to pull in the driveway. I imagine that cat waiting for its best friend too. Maybe we switched roles. You're waiting for me now.<br><br>
+                
+                Maybe I just miss you and I'm making this all up in my head, but I imagine that cat waiting by that fence line. When I pass and am reincarnated, I'll come looking for you. We can run around that alleyway and harass the mean neighbor dogs. Talk our nonsense to each other. Play pretend again. We'll get into trouble for staying out too long.<br><br>
+                
+                Anyways, that's what made me write this letter. I felt the need to tell you that I thought of you today. Felt the need to reassure myself as well.<br><br>
+                
+                It's not a quiet life we live, but sometimes I can sit in all this noise and feel like maybe everything will be okay anyways. I try not to let my surroundings get to me, drown me out. So sometimes I just think about when the world was ours. Maybe it's as simple as that. Maybe those dark hours, when nothing but creativity flows, are reminders of when the world was ours. Maybe those silent moments at dinner time, when nothing but eating occurs, are reminders of when the world was absolutely ours. Maybe those little glances shared with strangers, the ones you don't remember after a while but you know you've had them, are reminders of when the world was totally ours. Maybe it's comforting learning the world was never truly ours, maybe the sonder that washed over me as I grew older is the reason I can allow myself to believe this.<br><br>
+                
+                I don't know. You'll never actually read this, cause there's no mailman that can reach heaven, but maybe I'll get to read it to you when I see you up there.<br><br>
+                
+                I'll keep it in my pocket, just in case.<br><br>
+                
+                Bye,<br>
+                You know who.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+  <script>
+  // Page transition logic only
+  window.addEventListener('load', () => {
+    const transition = document.getElementById('pageTransition');
+    let flipped = false;
+    window.addEventListener('scroll', () => {
+      if (!flipped && window.scrollY > 10) {
+        flipped = true;
+        transition.classList.add('flip');
+        setTimeout(() => transition.remove(), 1000);
+      }
+    });
+    window.onbeforeunload = () => window.scrollTo(0, 0);
+  });
+</script>
+</body>
+</html>

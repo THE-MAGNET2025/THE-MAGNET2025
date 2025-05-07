@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script type="module" src="nav.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/GLTFLoader.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Modular Scroll Effects with Lenis & SVG Path (Foreground)</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/GLTFLoader.js"></script>
+
+    <style>
+        /* Variables */
+        :root {
+            --coral: #e89082;
+            --forest: #3b574f;
+            --ocean: #4e83aa;
+            --lavender: #c1c2e4;
+            --sand: #dac4bc;
+            --dark-accent: #2a403b;
+            --path-bg: #e0e0e0;
+            --path-draw: var(--coral);
+            --transition: 0.3s ease-in-out;
+        }
+
+        /* Reset & Base */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html.lenis {
+            height: auto;
+        }
+
+        body {
+            font-family: 'Palatino', serif;
+            overflow-x: hidden;
+            background-color: var(--ocean);
+            color: var(--ocean);
+            line-height: 1.6;
+            transition: background-color 0.5s ease;
+        }
+
+        h1,
+        span {
+            font-family: 'Bestie Seventy', cursive;
+            color: var(--coral);
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+            margin-bottom: 1rem;
+            letter-spacing: 1vh;
+            position: relative;
+            z-index: 2;
+        }
+
+        h2 {
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+            color: var(--dark-accent);
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1.3;
+            position: relative;
+            z-index: 2;
+        }
+
+        p {
+            color: var(--lavender);
+            font-size: 1.15rem;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        blockquote {
+            font-size: 1.95rem;
+            color: var(--lavender);
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+
+        }
+
+
+
+        /* Sections */
+        section {
+            padding: 6rem 2rem;
+            max-width: calc(100% - 60px);
+            margin: 30px auto;
+            border-radius: 20px;
+            position: relative;
+            z-index: -50;
+        }
+
+        .intro-section,
+        .end-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-color: var(--ocean);
+        }
+
+        .end-section {
+            color: var(--sand);
+        }
+
+        /* Scroll Indicator */
+        .scroll-down {
+            margin-top: 80px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: bounce 2s infinite;
+            color: var(--lavender);
+            position: relative;
+            z-index: 2;
+        }
+
+        .arrow {
+            border: solid transparent;
+            border-top: 25px solid var(--coral);
+            border-left-width: 18px;
+            border-right-width: 18px;
+            margin-top: 15px;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-25px);
+            }
+
+            60% {
+                transform: translateY(-12px);
+            }
+        }
+
+        .vertical-spacer {
+            height: 10vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 700;
+            background-color: var(--ocean);
+            color: var(--sand);
+            padding: 3rem;
+            margin: 5px auto;
+            border-radius: 10px;
+            max-width: calc(100% - 60px);
+            position: relative;
+            z-index: -50;
+        }
+
+        .vertical-spacer p {
+            max-width: 90%;
+            margin-bottom: 5px;
+            color: var(--sand);
+        }
+
+        /* SVG Path */
+        .route-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+
+        }
+
+        .route-container svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+            z-index: 0;
+        }
+
+        .route-container path {
+            fill: none;
+            stroke-width: 5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 10, 10;
+        }
+
+        .route-container .dashed {
+            stroke: var(--path-bg);
+            opacity: 0.5;
+        }
+
+        .route-container .overlay {
+            stroke: var(--path-draw);
+            stroke-dashoffset: 0;
+        }
+
+        /* Horizontal Panels */
+        .horizontal-container {
+            overflow: hidden;
+            height: 30rem;
+            margin: 0px 0;
+            position: relative;
+        }
+
+        .horizontal-container.flex {
+            display: flex;
+        }
+
+        .horizontal-panel {
+            flex-shrink: 0;
+            width: 35rem;
+            max-width: 90vw;
+            height: 30rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            text-align: center;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* Cards & Images */
+        .property-card {
+            width: 100%;
+            max-width: 25rem;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.645, 0.045, 0.355, 1);
+            z-index: 5;
+        }
+
+        .property-image {
+            width: 120%;
+            aspect-ratio: 1/1;
+            overflow: hidden;
+            transition: height 0.4s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+
+        .property-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .LitArt {
+            height: 25rem;
+        }
+
+        .property-description {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 0;
+            padding: 0 1em;
+            overflow: hidden;
+            transition: height 0.4s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+
+        .property-image-title {
+            position: absolute;
+            top: 30%;
+            width: 100%;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.4s 0.2s;
+        }
+
+        /* Img Dropdown */
+        .img-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .img-container img {
+            display: block;
+            width: auto;
+            max-width: 20%;
+            height: auto;
+            border: 4px solid var(--dark-accent);
+            border-radius: 8px;
+        }
+        
+
+        .img-container .dropdown {
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 0.5rem;
+            text-align: center;
+            transition: top var(--transition);
+            color: #fff;
+        }
+
+        .img-container:hover .dropdown {
+            top: 0;
+        }
+
+        .img-container .dropdown h3,
+        .img-container .dropdown p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .img-container .dropdown h3 {
+            font-weight: 600;
+        }
+
+        .img-container .dropdown p {
+            font-weight: 300;
+            font-style: italic;
+        }
+
+        /* Gallery */
+        .horizontal-panel .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .horizontal-panel .gallery img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+            transition: transform var(--transition), box-shadow var(--transition);
+        }
+
+        .horizontal-panel .gallery img:hover {
+            transform: scale(1.03);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Video Wrapper – desktop first */
+        .video-wrapper {
+            position: relative;
+            width: 90%;
+            max-width: 35rem;
+            /* so it never gets too huge on large screens */
+            padding-top: 56.25%;
+            /* 16:9 aspect ratio */
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: box-shadow var(--transition);
+            margin-left: auto;
+            margin-right: auto;
+            justify-content: center;
+            justify-items: center;
+        }
+
+        .video-wrapper:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .video-wrapper video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform var(--transition);
+
+        }
+
+        .video-wrapper video:hover {
+            transform: scale(1.03);
+        }
+
+        /* Make panels auto‑height on tablet/mobile */
+        @media (max-width: 768px) {
+            .horizontal-panel {
+                width: 60vw;
+                padding: 3rem 1.5rem;
+                height: auto;
+                /* let video determine panel height */
+            }
+
+            .video-wrapper {
+                width: 100%;
+                /* full width inside the panel */
+                padding-top: 56.25%;
+            }
+        }
+
+        /* On small phones, stretch it out even more */
+        @media (max-width: 480px) {
+            .horizontal-panel {
+                width: 80vw;
+                padding: 2rem 1rem;
+                height: auto;
+            }
+
+            .video-wrapper {
+                width: 100%;
+                padding-top: 56.25%;
+            }
+        }
+
+
+        /* Layering */
+        section,
+        .intro-section,
+        .end-section,
+        .vertical-spacer {
+            position: relative;
+            z-index: -50;
+        }
+
+        /* Media Queries */
+        @media (min-width: 1000px) {
+            .property-card {
+                max-width: 14rem;
+                max-height: 25rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 3.5rem;
+                letter-spacing: 0.8vh;
+            }
+
+            .intro-section h1 {
+                font-size: 4rem;
+            }
+
+            .intro-section h2,
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            p,
+            blockquote {
+                font-size: 1rem;
+                line-height: 1.5;
+            }
+
+            blockquote {
+                font-size: 1.75rem;
+            }
+
+            section,
+            .vertical-spacer {
+                padding: 4rem 1.5rem;
+                margin: 20px auto;
+                border-radius: 15px;
+                max-width: calc(100% - 40px);
+            }
+
+            .vertical-spacer {
+                font-size: 2rem;
+                min-height: auto;
+            }
+
+            .scroll-down {
+                margin-top: 50px;
+                font-size: 1rem;
+            }
+
+            .arrow {
+                border-left-width: 12px;
+                border-right-width: 12px;
+                border-top-width: 18px;
+                margin-top: 10px;
+                border-radius: 100%;
+            }
+
+            .route-container path {
+                stroke-width: 4;
+            }
+
+            .horizontal-panel {
+                width: 60vw;
+                padding: 3rem 1.5rem;
+            }
+
+            .property-card {
+                max-width: 18rem;
+            }
+
+            .img-container img {
+                max-width: 40%;
+            }
+
+        }
+            @media (max-width: 480px) {
+                .horizontal-panel {
+                    width: 80vw;
+                    padding: 2rem 1rem;
+                    height: auto;
+                }
+
+                .horizontal-container {
+                    height: auto;
+                }
+
+                h1 {
+                    font-size: 2.5rem;
+                    letter-spacing: 0.5vh;
+                }
+
+                .intro-section h1 {
+                    font-size: 2.8rem;
+                }
+
+                .intro-section h2 {
+                    font-size: 2rem;
+                }
+
+                h2 {
+                    text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+
+                }
+
+                blockquote {
+                    font-size: 1.3rem;
+                    z-index: 5000;
+                    text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+
+                }
+
+                p {
+                    font-size: 0.9rem;
+                }
+
+                .property-card {
+                    max-width: 90%;
+                }
+
+                .scroll-down {
+                    font-size: 0.9rem;
+                    margin-top: 30px;
+                }
+
+                .arrow {
+                    border-left-width: 10px;
+                    border-right-width: 10px;
+                    border-top-width: 15px;
+                }
+
+                .vertical-spacer {
+                    font-size: 1.5rem;
+                    padding: 3rem 1rem;
+                }
+
+                section,
+                .vertical-spacer {
+                    max-width: calc(100% - 20px);
+                    padding: 3rem 1rem;
+                }
+
+                .img-container img {
+                    max-width: 50%;
+                }
+            }
+
+            /* Custom Font */
+            @font-face {
+                font-family: 'Bestie Seventy';
+                src: url('styles/Bestie Seventy.ttf') format('truetype');
+                font-display: swap;
+            }
+            #sectionFadeScale {
+                display: flex;       
+                flex-wrap: wrap;     
+                gap: 1rem;            
+                }
+            
+            #sectionFadeScale .horizontal-panel {
+                flex: 1 1 30%;        
+                min-width: 200px;     
+                }       
+           
+            #sectionFadeScale .video-wrapper {
+                width: 100%;
+                max-width: 100%;
+                padding-top: 56.25%;
+                /* 16:9 aspect */
+            }
+
+       
+            #sectionFadeScale .video-wrapper video {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+   
+            @media (min-width: 769px) {
+
+                #sectionFadeScale {
+                    height:auto;
+                    
+                }
+            }
+
+            
+            @media (max-width: 768px) {
+                .horizontal-panel {
+                    width: 80vw;
+                    padding: 2rem 1rem;
+                    height: auto;
+                }
+
+                .horizontal-container {
+                    height: auto;
+                }
+
+                #sectionFadeScale {
+                    flex-direction: column;
+                }
+                #sectionFadeScale .horizontal-panel {
+                flex: none;         
+                width: 100%;        
+  }
+}
+
+           
+
+            .property-image {
+                width: 100%;
+                max-height: 25rem;
+               
+                overflow: hidden;
+              
+            }
+
+            .property-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+
+            .Sec-Title {
+                font-size: 8vw;
+                text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+
+            }
+    </style>
+
+</head>
+
+<body>
+    <div class="route-container">
+        <svg id="main-svg-path" viewBox="0 0 500 6000" preserveAspectRatio="none">
+            <path class="overlay"
+                d="M 250 150 Q -21 237 13 453 C 31 593 350 1000 250 1500 S 150 2000 250 2500 C 350 3000 150 3500 250 4000 S 350 4500 250 5000 C 150 5500 350 5950 250 5950" />
+        </svg>
+    </div>
+    <include-html src="nav2.html"></include-html>
+
+
+
+    <section class="intro-section">
+        <h1 id="introTitle" class="text-5xl md:text-7xl font-bold mb-4">THE MAGNET</h1>
+        <br>
+        <br>
+
+        <h2 class="text-xl md:text-2xl max-w-3xl">A Literary Arts Magazine Exploring Paths Unseen</h2>
+        <div id="startScroll" class="scroll-down">
+            <p>Begin Journey</p>
+            <div class="arrow" id="WanderStart"></div>
+        </div>
+    </section>
+    <section class="vertical-spacer">
+        <blockquote><span>The Magnet</span> is a literary arts magazine brought to you by Madison Academic High School's
+            Humanities team.
+            Our teams have come together to bring you amazing pieces of art, literature, and film.
+        </blockquote>
+    </section>
+    <br>
+    <br>
+    <br>
+    <br>
+    <section class="vertical-spacer">
+        <p>"The creative elements you'll find in <span>The Magnet</span> are nothing short of stunning. They speak
+            with such sophistication, meet the eye and ear with mature and diverse discoveries."<br>-<span>Chris
+                Clark</span>
+        </p>
+    </section>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <section class="vertical-spacer" id="ArtSection">
+        <blockquote class="Sec-Title">ART
+            <br>
+            <p>Beauty and Thought</p>
+
+        </blockquote>
+    </section>
+
+
+
+    <div class="horizontal-container flex" id="sectionHorizontalLeft">
+        <div class="horizontal-panel">
+            <h2>Misc. Lot</h2>
+            <blockquote>Peter Snowden</blockquote>
+            <div class="property-card">
+                <div class="property-image">
+                    <img src="./Magnet-Art-Images/photo-output 2.png" alt="Artwork by Peter Snowden: Misc. Lot">
+                    <div class="property-image-title">Peter Snowden</div>
+                </div>
+                <div class="property-description">
+                </div>
+            </div>
+
+        </div>
+        <div class="horizontal-panel">
+            <h2>Pack Yr Romantic Mind</h2>
+            <blockquote>Ali Garner</blockquote>
+            <div class="property-card">
+                <div class="property-image">
+                    <img src="./Magnet-Art-Images/photo-output 3.png"
+                        alt="Artwork by Ali Garner: Pack Yr Romantic Mind">
+                    <div class="property-image-title">Ali Garner</div>
+                </div>
+                <div class="property-description">
+                </div>
+            </div>
+        </div>
+        <div class="horizontal-panel">
+            <h2></h2>
+            <blockquote></blockquote>
+            <div class="property-card">
+                <div class="property-image">
+                    <img src="./Magnet-Art-Images/photo-output 5.png"
+                        alt="Artwork by Ada Snowden: The Escape From Hell">
+                    <div class="property-image-title">Ada Snowden</div>
+                </div>
+                <div class="property-description">
+                </div>
+            </div>
+        </div>
+        <div class="horizontal-panel">
+            <h2>Sculpture Detail</h2>
+            <blockquote>Ada Snowden</blockquote>
+            <div class="property-card">
+                <div class="property-image">
+                    <img src="./Magnet-Art-Images/IMG_6839__1_-removebg-preview 2.png" alt="Artwork: Sculpture Detail">
+                    <div class="property-image-title">Ada Snowden</div>
+                </div>
+                <div class="property-description">
+                </div>
+            </div>
+        </div>
+        <div class="horizontal-panel">
+            <h2>Collecting Dust</h2>
+            <p>Tre. Cathy</p>
+            <div class="property-card">
+                <div class="property-image">
+                    <img src="./Magnet-Art-Images/IMG_6841 (1) Background Removed 2.png"
+                        alt="Artwork by Tre. Cathy: Collecting Dust">
+                    <div class="property-image-title">Tre. Cathy</div>
+                </div>
+                <div class="property-description">
+                </div>
+            </div>
+        </div>
+        <div class="horizontal-panel">
+            <h2>I Wonder Why I Wander</h2>
+            <p>Bryant Price</p>
+            <div class="property-card">
+                <div class="property-image">
+                    <img src="./Magnet-Art-Images/IMG_6842 (1) Background Removed 2.png" alt="Artwork: Abstract Form">
+                    <div class="property-image-title">Artist Name</div>
+                </div>
+                <div class="property-description">
+                </div>
+            </div>
+        </div>
+        <div class="horizontal-panel">
+            <h2>Endless Dreams</h2>
+            <p>Jade Jiang</p>
+            <div class="property-card">
+                <div class="property-image">
+                    <img src="./Magnet-Art-Images/photo-output 6.png" alt="Artwork: Geometric Eye">
+                    <div class="property-image-title">Artist Name</div>
+                </div>
+                <div class="property-description">
+                </div>
+            </div>
+        </div>
+        <div class="horizontal-panel">
+            <h2>Lost in Thought</h2>
+            <p>Jackie Mize</p>
+            <div class="property-card">
+                <div class="property-image">
+                    <img src="./Magnet-Art-Images/photo-output 4.png" alt="Artwork by Jackie Mize: Lost in Thought">
+                    <div class="property-image-title">Jackie Mize</div>
+                </div>
+                <div class="property-description">
+                </div>
+            </div>
+        </div>
+        <div class="horizontal-panel">
+            <h2>Cat & Mouse</h2>
+            <p>Colyn Giron</p>
+            <div class="property-card">
+                <div class="property-image">
+                    <img src="./Magnet-Art-Images/photo-output 7.png" alt="Artwork by Colyn Giron: Cat & Mouse">
+                    <div class="property-image-title">Colyn Giron</div>
+                </div>
+                <div class="property-description">
+                </div>
+            </div>
+        </div>
+        <div class="horizontal-panel">
+            <h2>No-man's-land</h2>
+            <p>Maddy Barnes</p>
+            <div class="property-card">
+                <div class="property-image">
+                    <img src="./Magnet-Art-Images/photo-output.png" alt="Artwork by Maddy Barnes: No-man's-land">
+                    <div class="property-image-title">Maddy Barnes</div>
+                </div>
+                <div class="property-description">
+                </div>
+            </div>
+        </div>
+    </div>
+    <section class="vertical-spacer" id="LiteratureSection">
+        <blockquote class="Sec-Title" > LITERATURE
+            <br>
+            <p>Words that inspire</p>
+        </blockquote>
+
+    </section>
+    <div class="horizontal-container flex" id="sectionHorizontalRight">
+        <div class="horizontal-panel">
+            <h2>No Man's Land</h2>
+            <blockquote>McKenna Barnes</blockquote>
+            <div class="property-card">
+                <div class="property-image">
+                    <img class="LitArt" src="./Literature-Covers//No-Man's-Land.png"
+                        alt="Literature Cover: No Man's Land by McKenna Barnes">
+                    <div class="property-image-title">McKenna Barnes</div>
+                </div>
+                <div class="property-description">
+                </div>
+            </div>
+
+        </div>
+        <div class="horizontal-panel">
+            <h2>Direction</h2>
+            <blockquote>Micah Upton</blockquote>
+            <div class="property-card">
+                <div class="property-image">
+                    <img class="LitArt" src="./Literature-Covers/direction.png"
+                        alt="Literature Cover: Direction by Micah Upton">
+                    <div class="property-image-title">Micah Upton</div>
+                </div>
+                <div class="property-description">
+                </div>
+            </div>
+        </div>
+        <div class="horizontal-panel">
+            <h2>A Sparrow's Flights</h2>
+            <p>Lilly Chattin</p>
+            <div class="property-card">
+                <div class="property-image">
+                    <img class="LitArt" src="./Literature-Covers/a sparrow flight.png"
+                        alt="Literature Cover: A Sparrow's Flights by Lilly Chattin">
+                    <div class="property-image-title">Lilly Chattin</div>
+                </div>
+                <div class="property-description">
+                </div>
+            </div>
+        </div>
+        <div class="horizontal-panel">
+            <h2>Rise, Young Dreamer</h2>
+            <blockquote>J McGill</blockquote>
+            <div class="property-card">
+                <div class="property-image">
+                    <img class="LitArt" src="./Literature-Covers/rise young dreamer.png"
+                        alt="Literature Cover: Rise, Young Dreamer by J McGill">
+                    <div class="property-image-title">J McGill</div>
+                </div>
+                <div class="property-description">
+                </div>
+            </div>
+        </div>
+        <div class="horizontal-panel">
+            <h2>When the World was Ours</h2>
+            <blockquote>Catherine Marks</blockquote>
+            <div class="property-card">
+                <div class="property-image">
+                    <img class="LitArt" src="./Literature-Covers/when the world was ours.png"
+                        alt="Literature Cover: When the World was Ours by Catherine Marks">
+                    <div class="property-image-title">Catherine Marks</div>
+                </div>
+                <div class="property-description">
+                </div>
+            </div>
+        </div>
+        <div class="horizontal-panel">
+            <h2>I, The Wanderer</h2>
+            <p>Abi Mize</p>
+            <div class="property-card">
+                <div class="property-image">
+                    <img class="LitArt" src="./Literature-Covers/I the wanderer.png"
+                        alt="Literature Cover: I, The Wanderer by Abi Mize">
+                    <div class="property-image-title">Abi Mize</div>
+                </div>
+                <div class="property-description">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="horizontal-container flex" id="sectionDiagonal">
+
+        <div class="horizontal-panel" id="FilmSection">
+            <section class="vertical-spacer">
+                <blockquote class="Sec-Title">Film
+                    <br>
+                    <p>Art and Beauty in Motion</p>
+
+                </blockquote>
+            </section>
+        </div>
+    </div>
+
+    <div class="horizontal-container flex" id="sectionFadeScale">
+        <div class="horizontal-panel">
+            <h2>FREEASSOCIATION</h2>
+
+            <p>Peter Snowden</p>
+
+            <div class="video-wrapper">
+                <video controls poster="./images/Freeassociation_thumbnail.png">
+                    <source src="./images/Freeassociation_thumbnail.png" type="video/webm" />
+                    <source src="./Films/FREEASSOCIATION - Peter Snowden.mov" type="video/mp4" />
+                </video>
+            </div>
+        </div>
+        <div class="horizontal-panel">
+            <h2>Camera Roll Overture</h2>
+
+            <p>Peter Snowden</p>
+
+            <div class="video-wrapper">
+                <video controls poster="./images/CameraApurutre_thumbnail.png">
+                    <source src="./images/CameraApurutre_thumbnail.png" type="video/webm" />
+                    <source src="./Films/Camera Roll Overture - Peter Snowden.mp4" type="video/mp4" />
+                </video>
+            </div>
+        </div>
+        <div class="horizontal-panel">
+            <h2>Memories</h2>
+
+            <p>Kristan Reyes</p>
+
+            <div class="video-wrapper">
+                <video controls poster="./images/Laptop_thumbnail.webp">
+                    <source src="./images/Laptop_thumbnail.webp" type="video/webm" />
+                    <source src="./Films/Memories - Kristan Reyes.mov" type="video/mp4" />
+                </video>
+            </div>
+        </div>
+    </div>
+
+
+    <section class="end-section">
+        <h2 class="text-4xl md:text-6xl font-bold mb-4"></h2>
+        <p class="text-xl md:text-2xl max-w-3xl"></p>
+    </section>
+
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script>
+        // — Lenis Smooth‑Scroll Setup — 
+        const lenis = new Lenis();
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add(t => lenis.raf(t * 1000));
+        gsap.registerPlugin(ScrollTrigger);
+
+        // — Helper: shift the SVG so its built‑in start point sits under #WanderStart —
+        function alignSvgToArrow() {
+            const svgEl = document.getElementById('main-svg-path');
+            const paths = svgEl.querySelectorAll('path');
+            const arrow = document.getElementById('WanderStart');
+            if (!svgEl || paths.length === 0 || !arrow) return;
+
+            const r = arrow.getBoundingClientRect();
+            const px = r.left + r.width / 2;
+            const py = r.top + r.height / 2;
+
+            const pt = svgEl.createSVGPoint();
+            pt.x = px;
+            pt.y = py;
+            const userP = pt.matrixTransform(svgEl.getScreenCTM().inverse());
+
+            const d0 = paths[0].getAttribute('d');
+            const m = /^M\s*([-\d\.]+)[, ]+([-\d\.]+)/.exec(d0);
+            if (!m) return;
+            const origX = parseFloat(m[1]),
+                origY = parseFloat(m[2]);
+
+            const dx = userP.x - origX;
+            const dy = userP.y - origY;
+
+            paths.forEach(p => p.setAttribute('transform', `translate(${dx.toFixed(2)},${dy.toFixed(2)})`));
+        }
+
+        // — SVG‐Path init —
+        function initSvg() {
+            const container = document.querySelector('.route-container');
+            const overlay = container.querySelector('path.overlay');
+            if (!overlay) return () => {};
+            const length = overlay.getTotalLength();
+            overlay.style.strokeDasharray = `${length} ${length}`;
+            const setOffset = p => overlay.style.strokeDashoffset = length * (1 - p);
+
+            ScrollTrigger.create({
+                trigger: 'body',
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: 0.5,
+                onUpdate: self => setOffset(self.progress),
+                onLeave: () => setOffset(1),
+                onEnterBack: () => setOffset(0),
+            });
+
+            const resize = () => {
+                container.style.height = `${document.documentElement.scrollHeight}px`;
+                const progress = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+                setOffset(Math.max(0, Math.min(1, progress)));
+            };
+            resize();
+            return resize;
+        }
+
+        // — Modular ScrollTrigger for panels —
+        function setupScrollEffect({
+            containerId,
+            initialProps,
+            animationProps,
+            scrollTriggerProps
+        }) {
+            const c = document.getElementById(containerId);
+            const panels = gsap.utils.toArray('.horizontal-panel', c);
+            if (!panels.length) return;
+
+            const isH = animationProps.xPercent != null;
+            if (initialProps) {
+                gsap.set(panels, initialProps);
+            } else {
+                gsap.set(panels, {
+                    clearProps: 'all'
+                });
+            }
+
+            // calculate end distance
+            let endDist = 0;
+            if (isH) {
+                const containerWidth = c.offsetWidth;
+                const totalWidth = panels.reduce((sum, p) => sum + p.offsetWidth, 0);
+                endDist = Math.max(0, totalWidth - containerWidth);
+            } else {
+                const containerHeight = c.offsetHeight;
+                const totalHeight = panels.reduce((sum, p) => sum + p.offsetHeight, 0);
+                endDist = Math.max(0, totalHeight - containerHeight);
+            }
+
+            gsap.to(panels, {
+                ...animationProps,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: c,
+                    pin: true,
+                    scrub: scrollTriggerProps.scrub?? 1,
+                    snap: (isH && panels.length > 1 && !containerId.includes("FadeScale")) ? {
+                        snapTo: 1 / (panels.length - 1),
+                        duration: 0.3
+                    } : 0,
+                    end: () => `+=${endDist}`,
+                    invalidateOnRefresh: true,
+                    ...scrollTriggerProps
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            alignSvgToArrow();
+
+            // Left section
+            const leftPanels = document.querySelectorAll('#sectionHorizontalLeft .horizontal-panel');
+            if (leftPanels.length) {
+                setupScrollEffect({
+                    containerId: 'sectionHorizontalLeft',
+                    animationProps: {
+                        xPercent: -100 * (leftPanels.length - 1)
+                    },
+                    scrollTriggerProps: {}
+                });
+            }
+
+            // Right section
+            const rightPanels = document.querySelectorAll('#sectionHorizontalRight .horizontal-panel');
+            if (rightPanels.length) {
+                const offset = -100 * (rightPanels.length - 1);
+                setupScrollEffect({
+                    containerId: 'sectionHorizontalRight',
+                    initialProps: {
+                        xPercent: offset
+                    },
+                    animationProps: {
+                        xPercent: 0
+                    },
+                    scrollTriggerProps: {
+                        scrub: 2
+                    }
+                });
+            }
+
+            // Diagonal & Fade/Scale (unchanged)
+            const sectionDiagonalPanels = document.querySelectorAll('#sectionDiagonal .horizontal-panel');
+            if (sectionDiagonalPanels.length) {
+                gsap.set(sectionDiagonalPanels, {
+                    xPercent: -100 * (sectionDiagonalPanels.length - 1),
+                    yPercent: 0
+                });
+                setupScrollEffect({
+                    containerId: 'sectionDiagonal',
+                    animationProps: {
+                        xPercent: 0,
+                        yPercent: 50 * (sectionDiagonalPanels.length - 1)
+                    },
+                    scrollTriggerProps: {}
+                });
+            }
+
+            const sectionFadeScalePanels = document.querySelectorAll('#sectionFadeScale .horizontal-panel');
+            if (sectionFadeScalePanels.length) {
+                gsap.fromTo(sectionFadeScalePanels, {
+                    opacity: 0,
+                    scale: 0.8
+                }, {
+                    opacity: 1,
+                    scale: 1,
+                    stagger: 0.3,
+                    duration: 0.6,
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: '#sectionFadeScale',
+                        pin: true,
+                        scrub: 1,
+                        snap: sectionFadeScalePanels.length > 1 ? {
+                            snapTo: "labels",
+                            duration: {
+                                min: 0.2,
+                                max: 1
+                            }
+                        } : 0,
+                        end: () => "+=" + (document.getElementById('sectionFadeScale').offsetHeight * (
+                            sectionFadeScalePanels.length - 1)),
+                        invalidateOnRefresh: true,
+                        onEnter: self => {
+                            sectionFadeScalePanels.forEach((panel, i) =>
+                                self.trigger.addLabel("panel" + i, i / (sectionFadeScalePanels
+                                    .length - 1))
+                            );
+                        }
+                    }
+                });
+            }
+
+            const resizeSvg = initSvg();
+            ScrollTrigger.refresh();
+            if (typeof resizeSvg === 'function') resizeSvg();
+
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    alignSvgToArrow();
+                    ScrollTrigger.refresh(true);
+                    if (typeof resizeSvg === 'function') resizeSvg();
+                }, 250);
+            });
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    alignSvgToArrow();
+                    ScrollTrigger.refresh(true);
+                    if (typeof resizeSvg === 'function') resizeSvg();
+                }, 300);
+            });
+
+            document.getElementById('menu-toggle').addEventListener('click', () =>
+                document.getElementById('menu').classList.toggle('open')
+            );
+        });
+    </script>
+
+   
+    <script>
+        // intercept same‑page hash‑links and do a JS smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const target = document.getElementById(link.hash.slice(1));
+                if (target) {
+                    lenis.scrollTo(target, {
+                        offset: 0,
+                        duration: 1.2,
+                        easing: t => t
+                    });
+                    history.pushState(null, '', link.hash);
+                }
+            });
+
+        });
+
+        // if you ever DO land on the page with a hash in the URL
+        window.addEventListener('load', () => {
+            const {
+                hash
+            } = location;
+            if (hash) {
+                const target = document.getElementById(hash.slice(1));
+                if (target) {
+                    // give the browser a tick to finish layout
+                    setTimeout(() => {
+                        target.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }, 0);
+                }
+            }
+        });
+    </script>
+    <script>
+        // run *after* lenis and GSAP have been initialized
+        const smoothLinks = document.querySelectorAll('a[href^="#"]');
+        smoothLinks.forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const target = document.getElementById(link.getAttribute('href').slice(1));
+                if (!target) return;
+                // use Lenis’ scrollTo
+                lenis.scrollTo(target, {
+                    offset: 0, // adjust if you have a fixed header
+                    duration: 1.0, // whatever feels right
+                    easing: t => t // linear easing
+                });
+                // update URL without jumping
+                history.pushState(null, '', link.getAttribute('href'));
+            });
+        });
+    </script>
+    <script>
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({
+                behavior: "smooth",
+                setupScrollEffect: "alignSvgToArrow"
+            });
+        }
+    </script>
+
+</body>
+
+</html>

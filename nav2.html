@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/GLTFLoader.js"></script>
+
+</head>
+<style>
+    /* Variables */
+    :root {
+      --coral: #e89082;
+      --forest: #3b574f;
+      --ocean: #4e83aa;
+      --lavender: #c1c2e4;
+      --sand: #dac4bc;
+      --dark-accent: #2a403b;
+      --path-bg: #e0e0e0;
+      --path-draw: var(--coral);
+      --transition: 0.3s ease-in-out;
+    }
+
+    
+
+    
+
+
+
+    
+
+    /* Menu & Viewer */
+    #menu,
+    #viewer-container {
+      transition: transform var(--transition), visibility var(--transition);
+    }
+
+    #menu {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 5cm;
+      background: none;
+      transform: translateY(-100%);
+      z-index: 10000;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #menu.open {
+      transform: translateY(0);
+    }
+
+    #menu-toggle {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 10001;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    #menu-toggle svg {
+      width: 32px;
+      height: 32px;
+      fill: var(--forest);
+    }
+
+    #viewer-container {
+      visibility: hidden;
+      width: 100%;
+      aspect-ratio: 1/1;
+      margin-top: 1rem;
+      transform: scale(1);
+    }
+
+    #menu.open #viewer-container {
+      visibility: visible;
+    }
+
+    #viewer-container:hover {
+      transform: scale(1.1);
+    }
+
+    
+
+   
+
+    /* Viewer & Menu */
+    #menu,
+    #viewer-container {
+      transition: transform var(--transition), visibility var(--transition);
+    }
+
+    #menu {
+      position: fixed;
+      top: 0;
+      left: 2%;
+      width: 25rem;
+      background: none;
+      transform: translateY(-100%);
+      z-index: 10000;
+      padding: 0rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #menu.open {
+      transform: translateY(0);
+    }
+
+    #menu-toggle {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 10001;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    #menu-toggle svg {
+      width: 32px;
+      height: 32px;
+      fill: var(--lavender);
+    }
+
+    #viewer-container {
+      position: relative;
+      visibility: hidden;
+      width: 80%;
+      aspect-ratio: 1/1;
+      margin-top: 1rem;
+      transform: scale(1);
+    }
+
+    #menu.open #viewer-container {
+      visibility: visible;
+    }
+
+    #viewer-container:hover {
+      transform: scale(1.1);
+    }
+
+    /* Circular Buttons around viewer */
+    .viewer-btn {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border-radius: 20%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--lavender);
+      font-weight: bold;
+      text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+      letter-spacing: 0.5vh;
+    }
+
+    /* Top center */
+    .viewer-btn.top {
+      top: 15%;
+      left: 40%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Right center */
+    .viewer-btn.right {
+      top: 50%;
+      left: 70%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Bottom center */
+    .viewer-btn.bottom {
+      top: 90%;
+      left: 40%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Left center */
+    .viewer-btn.left {
+      top: 50%;
+      left: 7%;
+      transform: translate(-50%, -50%);
+    }
+    .viewer-btn.topRight {
+      top: 30%;
+      left: 65%;
+      transform: translate(-50%, -50%);
+    }
+
+
+    :root {
+      --viewer-btn-size: 60px;
+      /* only edit this one */
+    }
+
+    .viewer-btn {
+      position: absolute;
+      width: var(--viewer-btn-size);
+      height: var(--viewer-btn-size);
+      border-radius: 20%;
+      background: none !important;
+      /* remove the colored fill */
+      opacity: 1 !important;
+      /* … */
+    }
+
+    /* make button contents align nicely */
+    .viewer-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      /* space between text & icon */
+      /* adjust as needed */
+    }
+
+    /* force all SVGs inside viewer‑btn to be small icons */
+    .viewer-btn svg {
+      width: 1em !important;
+      /* 1em = roughly the font‑size of the button */
+      height: 1em !important;
+      fill: currentColor;
+      /* icon inherits the button’s text color */
+      vertical-align: middle;
+    }
+
+    /* if you wrapped the SVG in .btn-icon, you can also do: */
+    .btn-icon {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .btn-label {
+      color: var(--lavender);
+    }
+    .viewer-btn {
+  display: flex;
+  align-items: center;
+  /* …any background, padding, border, hover, etc. */
+}
+
+.viewer-btn .btn-label,
+.viewer-btn .btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--coral);
+}
+
+/* If you want the whole label area clickable */
+.viewer-btn .btn-label {
+  padding: 0.5em 1em;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Similarly for the icon */
+.viewer-btn .btn-icon {
+  width: 2em;  /* or whatever size */
+  height: 2em;
+}
+
+.viewer-btn .btn-icon svg {
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* ensure clicks hit the <a> */
+}
+
+a{
+  color:var(--lavender);
+  font-family: 'Bestie Seventy', cursive;
+}
+
+a:hover{
+  transform: scale(1.2);
+}
+html {
+  scroll-behavior: smooth;
+}
+svg{
+  color: var(--coral);
+
+}
+@font-face {
+      font-family: 'Bestie Seventy';
+      src: url('styles/Bestie Seventy.ttf') format('truetype');
+      font-display: swap;
+    }
+.btn{
+        fill: none !important;
+    }
+    /* remove the default white background on every <button> inside .viewer-btn */
+.viewer-btn button,
+.viewer-btn .btn {
+  background: none;
+  border: none;
+  padding: 0;
+  /* if you want perfect transparency: */
+  background-color: transparent !important;
+}
+
+/* if you’re using an explicit .btn class: */
+.btn {
+  background: none;
+  border: none;
+}
+
+   
+  </style>
+<body>
+    <button id="menu-toggle" aria-label="Toggle menu">
+        <svg viewBox="0 0 100 80">
+          <rect width="100" height="15" />
+          <rect y="30" width="100" height="15" />
+          <rect y="60" width="100" height="15" /></svg>
+      </button>
+    
+      <nav id="menu">
+        <div id="viewer-container"></div>
+      
+        <!-- Right button -->
+        <div class="viewer-btn right" id="btn-right">
+          <a href="art.html" class="btn-label">Art</a>
+          <button type="btn" class="" onclick="scrollToSection('index.html','ArtSection')">
+            <svg fill="#000000" width="800px" height="800px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <title>wave</title>
+             
+              <path d="M0 22.848q0 2.496 1.216 4.608t3.328 3.328 4.608 1.216 4.576-1.216 3.328-3.328 1.216-4.608v-13.696q0-1.92 1.344-3.232t3.232-1.344q1.888 0 3.232 1.344t1.344 3.232v20.576q0 0.928 0.672 1.6t1.632 0.672 1.6-0.672 0.672-1.6v-20.576q0-2.496-1.216-4.608t-3.328-3.328-4.608-1.216-4.576 1.216-3.328 3.328-1.216 4.608v13.696q0 1.888-1.344 3.232t-3.232 1.344-3.232-1.344-1.344-3.232v-20.576q0-0.96-0.672-1.6t-1.632-0.672-1.6 0.672-0.672 1.6v20.576z"></path>
+            </svg>
+            </button>
+          </a>
+        </div>
+      
+        <!-- Top button -->
+        <div class="viewer-btn top" id="btn-top">
+          <a href="index.html" class="btn-label">Home</a>
+        </div>
+    
+        <div class="viewer-btn topRight" id="btn-topRight">
+          <a href="About.html" class="btn-label">About</a>
+        </div>
+      
+        <!-- Bottom button -->
+        <div class="viewer-btn bottom" id="btn-bottom">
+          <a href="./literature.html" class="btn-label">Literature</a>
+          <button type="button" class="btn" onclick="scrollToSection('index.html','LiteratureSection')">
+            <svg fill="#000000" width="800px" height="800px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <title>wave</title>
+             
+              <path d="M0 22.848q0 2.496 1.216 4.608t3.328 3.328 4.608 1.216 4.576-1.216 3.328-3.328 1.216-4.608v-13.696q0-1.92 1.344-3.232t3.232-1.344q1.888 0 3.232 1.344t1.344 3.232v20.576q0 0.928 0.672 1.6t1.632 0.672 1.6-0.672 0.672-1.6v-20.576q0-2.496-1.216-4.608t-3.328-3.328-4.608-1.216-4.576 1.216-3.328 3.328-1.216 4.608v13.696q0 1.888-1.344 3.232t-3.232 1.344-3.232-1.344-1.344-3.232v-20.576q0-0.96-0.672-1.6t-1.632-0.672-1.6 0.672-0.672 1.6v20.576z"></path>
+            </svg>
+            </button>
+        </div>
+      
+        <!-- Left button -->
+        <div class="viewer-btn left" id="btn-left">
+          <a href="film.html" class="btn-label">Film</a>
+          <button type="button" class="btn" onclick="scrollToSection('index.html','FilmSection')">
+            <svg fill="#000000" width="800px" height="800px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <title>wave</title>
+             
+              <path d="M0 22.848q0 2.496 1.216 4.608t3.328 3.328 4.608 1.216 4.576-1.216 3.328-3.328 1.216-4.608v-13.696q0-1.92 1.344-3.232t3.232-1.344q1.888 0 3.232 1.344t1.344 3.232v20.576q0 0.928 0.672 1.6t1.632 0.672 1.6-0.672 0.672-1.6v-20.576q0-2.496-1.216-4.608t-3.328-3.328-4.608-1.216-4.576 1.216-3.328 3.328-1.216 4.608v13.696q0 1.888-1.344 3.232t-3.232 1.344-3.232-1.344-1.344-3.232v-20.576q0-0.96-0.672-1.6t-1.632-0.672-1.6 0.672-0.672 1.6v20.576z"></path>
+            </svg>
+            </button>
+        </div>
+      </nav>
+      <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+      <script>
+        // — Three.js Viewer —
+        const viewerContainer = document.getElementById("viewer-container");
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, viewerContainer.clientWidth / viewerContainer.clientHeight, 0.1,
+          1000);
+        const renderer = new THREE.WebGLRenderer({
+          antialias: true,
+          alpha: true
+        });
+        renderer.setSize(viewerContainer.clientWidth, viewerContainer.clientHeight);
+        renderer.setClearColor(0x000000, 0);
+        renderer.shadowMap.enabled = true;
+        renderer.physicallyCorrectLights = true;
+        renderer.toneMapping = THREE.ReinhardToneMapping;
+        renderer.toneMappingExposure = 2;
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        viewerContainer.appendChild(renderer.domElement);
+    
+        // Lights
+        scene.add(new THREE.AmbientLight(0xffffff, 1));
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        dirLight.position.set(5, 5, 5);
+        dirLight.castShadow = true;
+        scene.add(dirLight);
+        const ptLight1 = new THREE.PointLight(0xffffff, 1);
+        ptLight1.position.set(-5, 5, 5);
+        ptLight1.castShadow = true;
+        scene.add(ptLight1);
+        const ptLight2 = new THREE.PointLight(0xffffff, 0.8);
+        ptLight2.position.set(3, -3, 5);
+        scene.add(ptLight2);
+    
+        // Rotate Group
+        const rotateGroup = new THREE.Group();
+        scene.add(rotateGroup);
+    
+        // GLTF Loader
+        const loader = new THREE.GLTFLoader();
+        loader.load('3D-Models/3D-MAGNET-COMPASS.glb', gltf => {
+          const model = gltf.scene;
+          model.rotation.y = Math.PI;
+          scene.add(model);
+    
+          const targetNames = [
+            'Node1', 'Node2', 'Node5', 'Node6', 'Node7', 'Node8',
+            'Node9', 'Node10', 'Node14', 'Node15', 'Node16',
+            'Node18', 'Node19', 'Node20'
+          ];
+          targetNames.forEach(name => {
+            const node = model.getObjectByName(name);
+            if (node) rotateGroup.attach(node);
+          });
+        });
+    
+        camera.position.z = 6;
+        camera.position.y = 0;
+    
+        function animate() {
+          requestAnimationFrame(animate);
+          rotateGroup.rotation.z += 0.03;
+          renderer.render(scene, camera);
+        }
+        animate();
+    
+        window.addEventListener('resize', () => {
+          renderer.setSize(window.innerWidth, window.innerHeight);
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+        });
+      </script>
+    <script>
+      // intercept same‑page hash‑links and do a JS smooth scroll
+      document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.getElementById(link.hash.slice(1));
+      if (target) {
+        lenis.scrollTo(target, { offset: 0, duration: 1.2, easing: t => t });
+        history.pushState(null, '', link.hash);
+      }
+    });
+    
+      });
+    
+      // if you ever DO land on the page with a hash in the URL
+      window.addEventListener('load', () => {
+        const { hash } = location;
+        if (hash) {
+          const target = document.getElementById(hash.slice(1));
+          if (target) {
+            // give the browser a tick to finish layout
+            setTimeout(() => {
+              target.scrollIntoView({ behavior: 'smooth' });
+            }, 0);
+          }
+        }
+      });
+    </script>
+    <script>
+      // run *after* lenis and GSAP have been initialized
+      const smoothLinks = document.querySelectorAll('a[href^="#"]');
+      smoothLinks.forEach(link => {
+        link.addEventListener('click', e => {
+          e.preventDefault();
+          const target = document.getElementById(link.getAttribute('href').slice(1));
+          if (!target) return;
+          // use Lenis’ scrollTo
+          lenis.scrollTo(target, {
+            offset: 0,       // adjust if you have a fixed header
+            duration: 1.0,   // whatever feels right
+            easing: t => t   // linear easing
+          });
+          // update URL without jumping
+          history.pushState(null, '', link.getAttribute('href'));
+        });
+      });
+    </script>
+    <script>
+        /**
+         * Smoothly scrolls to #sectionId on pageUrl.
+         * If already on that page, just scrolls;
+         * otherwise navigates there (hash will trigger scroll on load).
+         *
+         * @param {string} pageUrl     - e.g. 'film.html'
+         * @param {string} sectionId   - e.g. 'FilmSection'
+         */
+        function scrollToSection(pageUrl, sectionId) {
+          const targetPath = new URL(pageUrl, location.origin).pathname;
+          // Are we on that page already?
+          if (location.pathname === targetPath) {
+            // Same page → smooth‑scroll immediately
+            const targetEl = document.getElementById(sectionId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth' });
+              history.replaceState(null, '', '#' + sectionId);
+            } else {
+              console.warn(`No element #${sectionId} on this page.`);
+            }
+          } else {
+            // Different page → navigate there with hash
+            // on load, your existing hash‑handler will scroll it
+            location.href = pageUrl + '#' + sectionId;
+          }
+        }
+        
+        // On page load: if there’s a hash and that element exists, smooth‑scroll it
+        window.addEventListener('load', () => {
+          const hash = location.hash.slice(1);
+          if (hash) {
+            const targetEl = document.getElementById(hash);
+            if (targetEl) {
+              // slight delay so layout is ready
+              setTimeout(() => {
+                targetEl.scrollIntoView({ behavior: 'smooth' });
+              }, 0);
+            }
+          }
+        });
+        </script>
+        
+    <script>
+        const menuToggle = document.getElementById('menu-toggle');
+        const menu       = document.getElementById('menu');
+      
+        menuToggle.addEventListener('click', () => {
+          menu.classList.toggle('open');
+        });
+      </script>
+      
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Model Viewer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/environments/RoomEnvironment.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        );
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        document.body.appendChild(renderer.domElement);
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);  // Reduced intensity
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);  // Reduced intensity
+        directionalLight.position.set(5, 5, 5);
+        directionalLight.castShadow = true;
+        scene.add(directionalLight);
+
+        const pointLight = new THREE.PointLight(0xffffff, 0.5);  // Reduced intensity
+        pointLight.position.set(-5, 5, 5);
+        pointLight.castShadow = true;
+        scene.add(pointLight);
+
+        const fillLight = new THREE.PointLight(0xffffff, 0.5);  // Reduced intensity
+        fillLight.position.set(3, -3, 5);
+        scene.add(fillLight);
+
+        // Environment map (helps with PBR)
+        const pmremGenerator = new THREE.PMREMGenerator(renderer);
+        scene.environment = pmremGenerator.fromScene(
+            new THREE.Scene(), 0.04
+        ).texture;
+
+        // Controls (only allow horizontal rotation)
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.1;
+        controls.enableZoom = false;  // Disable zoom
+        controls.enablePan = false;   // Disable movement (pan)
+        controls.maxPolarAngle = Math.PI / 2;  // Limit vertical rotation
+        controls.minPolarAngle = Math.PI / 2;  // Limit vertical rotation
+
+        let hasUserInteracted = false;
+        controls.addEventListener("start", () => {
+            hasUserInteracted = true;
+        });
+
+        camera.position.set(1, 1, 2);
+
+        // Load Model
+        const loader = new THREE.GLTFLoader();
+        let model, handle1, handle2;
+        loader.load("3D-Models/Serene_Miniature_Oasi_0410170907_texture.glb", (gltf) => {
+            model = gltf.scene;
+            model.rotation.y = Math.PI;
+
+            model.traverse((child) => {
+                if (child.isMesh && child.material) {
+                    child.material.metalness = 0;  // Reduced metalness
+                    child.material.roughness = 0.7;  // Increased roughness for less gloss
+                    child.material.emissive = new THREE.Color(0);
+                }
+
+                if (child.name === "Node3") handle1 = child;
+                if (child.name === "Node4") handle2 = child;
+            });
+
+            scene.add(model);
+
+            // Update camera to always look at the center of the model
+            controls.target.set(0, 0, 0);  // The model's center (or wherever you want the camera to focus)
+            controls.update();  // Update controls to apply the new target
+        });
+
+        // Animation
+        let floatOffset = 0;
+        let bounceDirection = 1;
+        let hoverAngle = 0;
+        const bounceSpeed = 0.005;
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (model && !hasUserInteracted) {
+                // Bounce up and down
+                floatOffset += bounceSpeed * bounceDirection;
+                if (floatOffset > 0.2 || floatOffset < -0.2) bounceDirection *= -1;
+                model.position.y = floatOffset;
+
+                // Rotate slowly (only horizontal)
+                model.rotation.y += 0.01;
+
+                // Sway gently
+                hoverAngle += 0.02;
+                model.rotation.x = Math.sin(hoverAngle) * 0.05;
+                model.rotation.z = Math.sin(hoverAngle / 2) * 0.05;
+
+                // Spin handles
+                if (handle1 && handle2) {
+                    handle1.rotation.z += 0.02;
+                    handle2.rotation.z += 0.02;
+                }
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        window.addEventListener("resize", () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+    </script>
+</body>
+
+</html>

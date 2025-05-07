@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Model Viewer</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/GLTFLoader.js"></script>
+  <style>
+    * { z-index: 10000; }
+    body { margin: 0; overflow: hidden; background: none; }
+    canvas { display: block; position: absolute; top: 0; left: 0; }
+    .text-overlay {
+      position: absolute; top: 10px; left: 10px;
+      color: #040303; font-size: 18px; z-index: 100;
+      font-family: Arial, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div class="text-overlay" id="text-overlay"></div>
+  <script>
+    // --- Core Three.js Setup ---
+    const scene    = new THREE.Scene();
+    const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000, 0);
+    renderer.shadowMap.enabled        = true;
+    renderer.physicallyCorrectLights = true;
+    renderer.toneMapping             = THREE.ReinhardToneMapping;
+    renderer.toneMappingExposure     = 2;
+    renderer.outputEncoding          = THREE.sRGBEncoding;
+    document.body.appendChild(renderer.domElement);
+
+    // --- Lights ---
+    scene.add(new THREE.AmbientLight(0xffffff, 1));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    dirLight.position.set(5, 5, 5);
+    dirLight.castShadow = true;
+    scene.add(dirLight);
+    const ptLight1 = new THREE.PointLight(0xffffff, 1);
+    ptLight1.position.set(-5, 5, 5);
+    ptLight1.castShadow = true;
+    scene.add(ptLight1);
+    const ptLight2 = new THREE.PointLight(0xffffff, 0.8);
+    ptLight2.position.set(3, -3, 5);
+    scene.add(ptLight2);
+
+    // --- Group for your listed nodes ---
+    const rotateGroup = new THREE.Group();
+    scene.add(rotateGroup);
+
+    // --- Handles (Node3 & Node4) ---
+    let handle1, handle2;
+
+    // --- GLTF Loader ---
+    const loader = new THREE.GLTFLoader();
+    loader.load('3D-Models/3D-MAGNET-COMPASS.glb', gltf => {
+      const model = gltf.scene;
+      // flip so the front faces the camera
+      model.rotation.y = Math.PI;
+      scene.add(model);
+
+      
+
+      // now attach only your listed nodes
+      const targetNames = [
+        'Node1','Node2','Node5','Node6','Node7','Node8',
+        'Node9','Node10','Node14','Node15','Node16',
+        'Node18','Node19','Node20'
+      ];
+      const found = [];
+      targetNames.forEach(name => {
+        const node = model.getObjectByName(name);
+        if (node) {
+          // preserve world transform while reparenting
+          rotateGroup.attach(node);
+          found.push(name);
+        } else {
+          console.warn(`rotateGroup: no node named "${name}" found in scene`);
+        }
+      });
+      console.log('rotateGroup attached these nodes:', found);
+    });
+
+    // --- Camera Position ---
+    camera.position.z = 5;
+    camera.position.y = 0.5;
+
+    // --- Animation Loop ---
+    function animate() {
+      requestAnimationFrame(animate);
+
+      
+
+      // spin only your attached nodes as a group
+      rotateGroup.rotation.z += 0.03;
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // --- Responsive Resizing ---
+    window.addEventListener('resize', () => {
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+    });
+  </script>
+</body>
+</html>
