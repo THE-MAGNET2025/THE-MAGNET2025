@@ -466,6 +466,23 @@
                 transform: translateY(0);
             }
         }
+/* make the group photo fluid and centered */
+.team-photo {
+  display: block;          /* remove any inline‑element quirks */
+  width: 100%;             /* fill its parent’s width */
+  max-width: 700rem;        /* don’t get ridiculously large on big screens */
+  height: auto;            /* maintain aspect ratio */
+  object-fit: cover;       /* crop nicely if ratio differs */
+  margin: 0 auto;          /* center inside its grid cell */
+  border-radius: 10%;      /* keep the circular look */
+}
+
+/* tighten things up on smaller screens */
+@media (max-width: 768px) {
+  .team-photo {
+    max-width: 60rem;
+  }
+}
 
         /* Add intersection observer for animation on scroll */
     </style>
@@ -520,6 +537,18 @@
 
         <div class="teams-container">
             <!-- Executive Leadership -->
+            
+            <div class="team-section">
+                <div class="team-section-header">
+                    <h2 class="team-section-title">Meet the full team</h2>
+                    
+                </div>
+                <div class="executive-grid">
+                    <div class="team-member executive">
+                       <img class="team-photo" src="./images/GroupPhoto.JPG" alt="Team Photo">
+                    </div>
+                </div>
+            </div>
             <div class="team-section">
                 <div class="team-section-header">
                     <h2 class="team-section-title">Executive Leadership</h2>
