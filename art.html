@@ -266,6 +266,7 @@ h1{
       <div class="image-container-wide pos-1">
         
         <img src="Magnet-Art-Images/photo-output 5.png" alt="Art 1">
+        <h2>The presentation of how it feels like to be in a 90s like mars film.</h2>
         <div class="spacer"></div>
         <h2>- Neveah Armstrong </h2>
       </div>
@@ -373,7 +374,7 @@ h1{
   const section1 = document.getElementById('section1');
   const section2 = document.getElementById('section2');
   const parallaxBg = document.querySelector('.parallax-bg');
-  const scrollSpeed = 1.6;
+  const scrollSpeed = 1.2;
   let revealed = false;
   let scrollPosition = 0;
   let maxScroll = 0;
@@ -435,21 +436,39 @@ h1{
       }
     }
   }
+  let lastTouchY = 0;
 
+  // desktop wheel
   window.addEventListener('wheel', e => {
     e.preventDefault();
-    handleScroll(e.deltaY);
+    handleScroll(e.deltaY * scrollSpeed);
   }, { passive: false });
 
-  let touchStartY = 0;
-  window.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: false });
+  // keyboard arrows/pages
+  window.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+      e.preventDefault();
+      handleScroll(50 * scrollSpeed);
+    }
+    if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+      e.preventDefault();
+      handleScroll(-50 * scrollSpeed);
+    }
+  });
+
+  // mobile touch
+  window.addEventListener('touchstart', e => {
+    lastTouchY = e.touches[0].clientY ;
+  }, { passive: false });
+
   window.addEventListener('touchmove', e => {
-    const touchEndY = e.touches[0].clientY + 1000;
-    handleScroll((touchStartY - touchEndY) * 0.8);
-    touchStartY = touchEndY;
+    e.preventDefault();
+    const currentY = e.touches[0].clientY + 1000;
+    const deltaY = (lastTouchY - currentY) * scrollSpeed;
+    handleScroll(deltaY);
+    lastTouchY = currentY;
   }, { passive: false });
-
-  window.addEventListener('load', calculateMaxScroll);
+ner('load', calculateMaxScroll);
   window.addEventListener('resize', calculateMaxScroll);
 </script>
 </body>
