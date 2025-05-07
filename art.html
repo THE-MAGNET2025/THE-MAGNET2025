@@ -371,7 +371,7 @@ h1{
 
 
 <script>
-  const scrollSpeed = 1.6;
+  const scrollSpeed = 1.4;
   let lastTouchY = 0;
   let isTouching = false;
   let revealed = false;
@@ -472,7 +472,7 @@ h1{
 
   window.addEventListener('touchmove', e => {
     e.preventDefault();
-    const currentY = e.touches[0].clientY - 1000;
+    const currentY = e.touches[0].clientY;
     const deltaY = (lastTouchY - currentY) * scrollSpeed;
     handleScroll(deltaY);
     lastTouchY = currentY;
