@@ -371,21 +371,23 @@ h1{
 
 
 <script>
-  const section1 = document.getElementById('section1');
-  const section2 = document.getElementById('section2');
-  const parallaxBg = document.querySelector('.parallax-bg');
-  const scrollSpeed = 1.2;
+  const scrollSpeed = 1.6;
+  let lastTouchY = 0;
+  let isTouching = false;
   let revealed = false;
   let scrollPosition = 0;
   let maxScroll = 0;
-  
+
+  const section1 = document.getElementById('section1');
+  const section2 = document.getElementById('section2');
+  const parallaxBg = document.querySelector('.parallax-bg');
+
   function calculateMaxScroll() {
     const art10 = document.querySelector('.pos-10');
     if (art10) {
       const rect = art10.getBoundingClientRect();
       const scrollTop = window.scrollY || window.pageYOffset;
-    
-      maxScroll = rect.top + scrollTop - window.innerHeight * .5;
+      maxScroll = rect.top + scrollTop - window.innerHeight * 0.5;
     } else {
       maxScroll = window.innerHeight * 6;
     }
@@ -402,15 +404,17 @@ h1{
   }
 
   function handleScroll(deltaY) {
-    deltaY = deltaY * scrollSpeed
-    if (!revealed) {
-      if (deltaY > 0) {
-        calculateMaxScroll();
-        revealSection();
-      }
-    } else {
+    if (!revealed && deltaY > 0) {
+      calculateMaxScroll();
+      revealSection();
+      return;
+    }
+    if (revealed) {
       const newPos = scrollPosition - deltaY;
-      if (newPos < -maxScroll - 2500) {
+
+      if (!isTouching) {
+        // DESKTOP: teleport/reset logic
+        if (newPos < -maxScroll - 2500) {
         //start
         scrollPosition = 0;
         parallaxBg.style.transition = 'none';
@@ -430,22 +434,27 @@ h1{
         parallaxBg.style.transition = 'transform 0.5s ease';
         parallaxBg.style.transform = `translateY(${scrollPosition}px)`;
       }
-      // allow hiding when at top
+      } else {
+        // MOBILE: clamp between start and end
+        scrollPosition = Math.max(Math.min(newPos, 0), -maxScroll);
+      }
+      parallaxBg.style.transition = 'transform 0.5s ease';
+      parallaxBg.style.transform = `translateY(${scrollPosition}px)`;
+
       if (scrollPosition === 0 && deltaY < 0) {
         hideSection();
       }
     }
   }
-  let lastTouchY = 0;
 
-  // desktop wheel
   window.addEventListener('wheel', e => {
     e.preventDefault();
+    isTouching = false;
     handleScroll(e.deltaY * scrollSpeed);
   }, { passive: false });
 
-  // keyboard arrows/pages
   window.addEventListener('keydown', e => {
+    isTouching = false;
     if (e.key === 'ArrowDown' || e.key === 'PageDown') {
       e.preventDefault();
       handleScroll(50 * scrollSpeed);
@@ -456,19 +465,20 @@ h1{
     }
   });
 
-  // mobile touch
   window.addEventListener('touchstart', e => {
-    lastTouchY = e.touches[0].clientY ;
+    isTouching = true;
+    lastTouchY = e.touches[0].clientY;
   }, { passive: false });
 
   window.addEventListener('touchmove', e => {
     e.preventDefault();
-    const currentY = e.touches[0].clientY + 1000;
+    const currentY = e.touches[0].clientY;
     const deltaY = (lastTouchY - currentY) * scrollSpeed;
     handleScroll(deltaY);
     lastTouchY = currentY;
   }, { passive: false });
-ner('load', calculateMaxScroll);
+
+  window.addEventListener('load', calculateMaxScroll);
   window.addEventListener('resize', calculateMaxScroll);
 </script>
 </body>
